@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成长经历 - 曹峻墉</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; }
+        :root { --bg:#0b0d10; --panel:#151a20; --text:#f5f7fb; --muted:#aab4c0; --line:rgba(255,255,255,.12); --cyan:#33d7ff; --mint:#6ee7b7; --amber:#f6c85f; }
+        body { min-height:100vh; color:var(--text); line-height:1.7; background:linear-gradient(135deg,rgba(51,215,255,.09),transparent 32%), var(--bg); }
+        .container { width:min(1120px,92vw); margin:0 auto; }
+        #header,#main-nav { position:sticky; z-index:1000; background:rgba(11,13,16,.86); border-bottom:1px solid var(--line); backdrop-filter:blur(14px); }
+        #header { top:0; padding:15px 0; }
+        #main-nav { top:89px; z-index:900; }
+        .header-container,#logo,.menu { display:flex; align-items:center; flex-wrap:wrap; gap:14px; }
+        .header-container { justify-content:space-between; }
+        #logo img { width:58px; height:58px; border-radius:50%; object-fit:cover; border:2px solid var(--cyan); }
+        #logo h1 { font-size:clamp(1.25rem,3vw,1.8rem); letter-spacing:0; }
+        .menu { justify-content:center; gap:12px; list-style:none; padding:10px 0; }
+        .menu a { display:flex; align-items:center; gap:7px; color:var(--muted); text-decoration:none; padding:9px 13px; border-radius:8px; font-weight:700; }
+        .menu a:hover,.menu .active a { color:var(--text); background:rgba(255,255,255,.08); }
+        .hero { padding:76px 0 42px; border-bottom:1px solid var(--line); }
+        .eyebrow { color:var(--mint); font-weight:850; letter-spacing:.06em; text-transform:uppercase; margin-bottom:12px; font-size:.82rem; }
+        h2 { font-size:clamp(2.25rem,6vw,4.6rem); line-height:1.03; letter-spacing:0; margin-bottom:18px; }
+        .lead { color:var(--muted); max-width:780px; font-size:clamp(1.04rem,2vw,1.2rem); }
+        .section { margin-top:30px; border:1px solid var(--line); border-radius:8px; background:rgba(21,26,32,.86); padding:28px; }
+        .section h3 { font-size:clamp(1.45rem,3vw,2.1rem); margin-bottom:16px; }
+        .timeline { display:grid; gap:16px; }
+        .item { display:grid; grid-template-columns:120px minmax(0,1fr); gap:18px; padding:18px; border:1px solid var(--line); border-radius:8px; background:rgba(255,255,255,.035); }
+        .date { color:var(--amber); font-weight:900; }
+        .item h4 { margin-bottom:6px; font-size:1.15rem; }
+        .item p { color:var(--muted); }
+        .skills { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; }
+        .skill { border:1px solid var(--line); border-radius:8px; padding:18px; background:rgba(255,255,255,.035); }
+        .skill h4 { color:var(--cyan); margin-bottom:8px; }
+        .skill p { color:var(--muted); }
+        .course-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px; }
+        .course-card { border:1px solid var(--line); border-radius:8px; padding:18px; background:rgba(255,255,255,.035); }
+        .course-card h4 { color:var(--cyan); margin-bottom:8px; }
+        .course-card p { color:var(--muted); }
+        #footer { margin-top:52px; border-top:1px solid var(--line); background:rgba(5,7,10,.86); padding:34px 0; color:var(--muted); text-align:center; }
+        @media (max-width:720px){ #main-nav{top:88px}.item{grid-template-columns:1fr}.date{font-size:.95rem} }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div class="container header-container">
+            <div id="logo">
+                <img src="images/touxiang.jpg" alt="曹峻墉头像">
+                <h1>曹峻墉 · 成长经历</h1>
+            </div>
+            <span>哈尔滨工业大学数字媒体艺术</span>
+        </div>
+    </header>
+    <nav id="main-nav">
+        <div class="container">
+            <ul class="menu">
+                <li><a href="My.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="about_profile.html"><i class="fas fa-user"></i> 关于我</a></li>
+                <li class="active"><a href="experience_profile.html"><i class="fas fa-seedling"></i> 成长经历</a></li>
+                <li><a href="works.html"><i class="fas fa-layer-group"></i> 作品展示</a></li>
+            </ul>
+        </div>
+    </nav>
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="eyebrow">Learning Path</div>
+                <h2>从数字媒体基础到实时交互作品的持续实践</h2>
+                <p class="lead">我的学习路径围绕数字媒体艺术展开：以游戏和虚拟空间为核心，用三维资产、实时引擎、UI 原型和创意技术把概念转化为可体验的作品。</p>
+            </div>
+        </section>
+        <div class="container">
+            <section class="section">
+                <h3>教育与项目时间线</h3>
+                <div class="timeline">
+                    <article class="item">
+                        <div class="date">2023.09 - 2027.06</div>
+                        <div><h4>哈尔滨工业大学 · 数字媒体艺术本科</h4><p>系统学习交互设计、三维建模、虚拟现实、游戏设计、数字影像与视觉传达，并逐步形成“游戏机制 + 空间叙事 + 技术实现”的作品方法。</p></div>
+                    </article>
+                    <article class="item">
+                        <div class="date">2024.07 - 2024.09</div>
+                        <div><h4>深圳地铁空间活化方案《岩海悠座》</h4><p>围绕深圳湾公园周边通勤人群的休憩与情绪放松需求，完成公共艺术座椅概念、模型设计、数字雕塑与空间展示。</p></div>
+                    </article>
+                    <article class="item">
+                        <div class="date">2025.04 - 2025.05</div>
+                        <div><h4>完美世界 Mini Game 大赛《调和者 Balance》</h4><p>负责双世界机制、关卡逻辑、后期处理材质与 UE5 蓝图实现，探讨 AI 时代下人类与人工智能的共生关系。项目获得“最佳人气奖”。</p></div>
+                    </article>
+                    <article class="item">
+                        <div class="date">2025.10 - 2025.11</div>
+                        <div><h4>蒙古主题 VR 数字展馆</h4><p>基于 UE5 与 PICO 设备组织沉浸式展陈体验，完成场景交互、视频墙、语音触发和用户体验流程优化。项目获得第八届大学生网络文化节省三等奖。</p></div>
+                    </article>
+                    <article class="item">
+                        <div class="date">2026.03 - 2026.05</div>
+                        <div><h4>澳门福隆新街活化项目</h4><p>与澳门科技大学合作，将街区历史文化调研转化为地理探索、线索收集与轻量互动玩法，引导年轻用户理解城市文化。</p></div>
+                    </article>
+                    <article class="item">
+                        <div class="date">2026.04 - 2026.06</div>
+                        <div><h4>阿里云通义千问 UI 类赛道</h4><p>面向内容创作者设计 AI 智能工作台，负责功能梳理、页面切换程序实现、千问 API 调用尝试与云服务器上线流程。</p></div>
+                    </article>
+                </div>
+            </section>
+            <section class="section">
+                <h3>持续训练方向</h3>
+                <div class="skills">
+                    <div class="skill"><h4>游戏与关卡</h4><p>通过魂类、开放世界、Roguelike、平台跳跃等类型游戏训练关卡动线、数值节奏和叙事体验判断。</p></div>
+                    <div class="skill"><h4>实时引擎</h4><p>使用 UE5 完成场景搭建、蓝图逻辑、后期材质、交互触发和 VR 展示流程。</p></div>
+                    <div class="skill"><h4>创意技术</h4><p>使用 Processing、p5.js 进行生成艺术和实时交互作品创作。</p></div>
+                    <div class="skill"><h4>视觉与资产</h4><p>使用 3ds Max、ZBrush、Substance Painter、Marvelous Designer、Marmoset Toolbag 和 Photoshop 制作视觉资产。</p></div>
+                </div>
+            </section>
+            <section class="section">
+                <h3>课程学习脉络</h3>
+                <div class="course-grid">
+                    <div class="course-card">
+                        <h4>设计基础与空间理解</h4>
+                        <p>通过设计基础、人居环境导论、设计美学基础、造型艺术基础、设计与调研分析等课程，建立造型、空间、审美和调研分析的基础能力。</p>
+                    </div>
+                    <div class="course-card">
+                        <h4>影像、动画与声音</h4>
+                        <p>学习摄影与镜头语言、影像声音基础、数字剪辑与合成、动画、数字影像作品分析、数字色彩、录音艺术与声音设计、视听表达技法与设计等内容，形成影像叙事和视听表达意识。</p>
+                    </div>
+                    <div class="course-card">
+                        <h4>数字媒体与交互技术</h4>
+                        <p>课程覆盖数字媒体程序基础、数字媒体设计基础、网站与网络程序设计、交互设计、虚拟现实系统、交互影像制作、网络交互动画、互动装置艺术设计与网络交互产品设计，为网页原型、VR 和交互作品提供技术支撑。</p>
+                    </div>
+                    <div class="course-card">
+                        <h4>游戏、算法与智能媒体</h4>
+                        <p>围绕游戏引擎基础、智能游戏设计、算法艺术、生成式计算艺术与跨媒介介设计实践、数据可视化设计、媒体数据分析、智能媒体传播等课程，持续拓展游戏机制、生成艺术和 AI 媒体方向。</p>
+                    </div>
+                    <div class="course-card">
+                        <h4>传播、策划与综合实践</h4>
+                        <p>通过数字媒体策划与营销、融合媒体设计与传播、广告创意与设计、数字影视广告创作、数字媒体业务实践、联合设计工坊和创意实习，将设计表达与真实传播场景连接起来。</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+    <footer id="footer">© 2025 曹峻墉的个人空间 | 成长经历</footer>
+</body>
+</html>

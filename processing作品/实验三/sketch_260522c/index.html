@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- PLEASE NO CHANGES BELOW THIS LINE (UNTIL I SAY SO) -->
+  <script language="javascript" type="text/javascript" src="libraries/p5.min.js"></script>
+  <script language="javascript" type="text/javascript" src="camera_signal_lab.js"></script>
+  <!-- OK, YOU CAN MAKE CHANGES BELOW THIS LINE AGAIN -->
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <main>
+    <header>
+      <div><h1>CAMERA <span>SIGNAL LAB</span></h1><p class="subtitle">把摄像头像素转译为流动的扫描线。亮度控制波形，噪声制造呼吸感，色彩通道形成数字残影。</p></div>
+      <div class="status-wrap"><div id="source-status" data-state="waiting">初始化中</div><div id="fps-status">-- FPS</div></div>
+    </header>
+    <section class="workspace">
+      <div class="stage"><div id="canvas-shell"></div></div>
+      <aside class="controls">
+        <h2>实时参数 / LIVE CONTROLS</h2>
+        <div class="field"><div class="field-row"><label for="effect-mode">视觉模式</label></div><select id="effect-mode"><option value="rgb">RGB 色差波形</option><option value="neon">霓虹示波器</option><option value="contour">动态等高线</option></select></div>
+        <div class="field"><div class="field-row"><label for="line-spacing">扫描线间距</label><output id="line-spacing-value"></output></div><input id="line-spacing" type="range" min="4" max="20" value="8" step="1"></div>
+        <div class="field"><div class="field-row"><label for="squiggle-strength">扰动强度</label><output id="squiggle-value"></output></div><input id="squiggle-strength" type="range" min="0" max="14" value="5" step="0.5"></div>
+        <div class="field"><div class="field-row"><label for="line-weight">线条粗细</label><output id="line-weight-value"></output></div><input id="line-weight" type="range" min="0.5" max="4" value="1.2" step="0.1"></div>
+        <div class="field"><div class="field-row"><label for="trail-strength">残影长度</label><output id="trail-value"></output></div><input id="trail-strength" type="range" min="0" max="235" value="190" step="5"></div>
+        <div class="button-row"><button id="demo-button" type="button">切换输入源</button><button id="save-button" type="button">保存画面</button></div>
+        <p class="hint">若浏览器未授权摄像头，系统会在 5 秒后自动启用程序化演示图像，保证效果仍可调试。</p>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>

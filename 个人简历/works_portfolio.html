@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品展示 - 曹峻墉</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; }
+        :root {
+            --bg: #0b0d10; --panel: #151a20; --panel-soft: #1c232b; --text: #f5f7fb;
+            --muted: #aab4c0; --line: rgba(255,255,255,.12); --cyan: #33d7ff;
+            --mint: #6ee7b7; --amber: #f6c85f; --coral: #ff7a76;
+        }
+        body {
+            min-height: 100vh; color: var(--text); line-height: 1.65; overflow-x: hidden;
+            background: linear-gradient(135deg, rgba(51,215,255,.09), transparent 28%),
+                        linear-gradient(225deg, rgba(246,200,95,.08), transparent 32%), var(--bg);
+        }
+        a { color: inherit; }
+        .container { width: min(1160px, 92vw); margin: 0 auto; }
+        #header {
+            position: sticky; top: 0; z-index: 1000; padding: 15px 0;
+            background: rgba(11,13,16,.86); border-bottom: 1px solid var(--line); backdrop-filter: blur(14px);
+        }
+        .header-container, .hero-actions, .project-actions, .modal-actions, .resource-list, .stat-row {
+            display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        }
+        .header-container { justify-content: space-between; }
+        #logo { display: flex; align-items: center; gap: 14px; }
+        #logo img {
+            width: 58px; height: 58px; border-radius: 50%; object-fit: cover;
+            border: 2px solid var(--cyan); box-shadow: 0 0 20px rgba(51,215,255,.26);
+        }
+        #logo h1 { font-size: clamp(1.25rem, 3vw, 1.8rem); letter-spacing: 0; }
+        .ghost-button, #musicToggle {
+            border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.05);
+            color: var(--text); padding: 10px 16px; font-weight: 700; cursor: pointer;
+            text-decoration: none; transition: transform .2s ease, border-color .2s ease, background .2s ease;
+        }
+        .ghost-button:hover, #musicToggle:hover { transform: translateY(-2px); border-color: var(--cyan); background: rgba(51,215,255,.12); }
+        #main-nav {
+            position: sticky; top: 89px; z-index: 900; background: rgba(11,13,16,.82);
+            border-bottom: 1px solid var(--line); backdrop-filter: blur(14px);
+        }
+        .menu { display: flex; justify-content: center; gap: 12px; list-style: none; padding: 10px 0; flex-wrap: wrap; }
+        .menu a {
+            display: flex; align-items: center; gap: 7px; padding: 9px 13px; border-radius: 8px;
+            color: var(--muted); text-decoration: none; font-weight: 700; transition: color .2s ease, background .2s ease;
+        }
+        .menu a:hover, .menu .active > a { color: var(--text); background: rgba(255,255,255,.08); }
+        #main-content { padding-bottom: 64px; }
+        .hero {
+            min-height: 62vh; display: grid; align-items: end; position: relative; isolation: isolate;
+            overflow: hidden; border-bottom: 1px solid var(--line);
+        }
+        .hero-carousel { position: absolute; inset: 0; z-index: -2; }
+        .hero-slide {
+            position: absolute; inset: 0; opacity: 0; transform: scale(1.02);
+            transition: opacity .8s ease, transform 4.8s ease; background-size: cover; background-position: center;
+        }
+        .hero-slide.active { opacity: 1; transform: scale(1); }
+        .hero-slide::after {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(90deg, rgba(11,13,16,.9), rgba(11,13,16,.42) 55%, rgba(11,13,16,.66));
+        }
+        .hero-dots { position: absolute; left: min(4vw, 44px); bottom: 24px; z-index: 2; display: flex; gap: 9px; }
+        .hero-dot {
+            width: 10px; height: 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.5);
+            background: rgba(255,255,255,.16); cursor: pointer;
+        }
+        .hero-dot.active { width: 28px; background: var(--cyan); border-color: var(--cyan); }
+        .hero::after { content: ""; position: absolute; inset: auto 0 0; height: 170px; z-index: -1; background: linear-gradient(transparent, var(--bg)); }
+        .hero-content { padding: 88px 0 64px; max-width: 790px; }
+        .eyebrow { color: var(--mint); font-weight: 800; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 12px; font-size: .82rem; }
+        .hero h2 { font-size: clamp(2.35rem, 7vw, 5.8rem); line-height: 1; letter-spacing: 0; margin-bottom: 18px; }
+        .hero p, .section-intro { color: var(--muted); font-size: clamp(1rem, 2vw, 1.18rem); max-width: 760px; }
+        .primary-button {
+            display: inline-flex; align-items: center; gap: 9px; border: 0; border-radius: 8px;
+            background: var(--cyan); color: #061016; padding: 12px 18px; font-weight: 900;
+            text-decoration: none; cursor: pointer; transition: transform .2s ease, filter .2s ease;
+        }
+        .primary-button:hover { transform: translateY(-2px); filter: brightness(1.05); }
+        .works-band { padding: 64px 0 0; }
+        .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 26px; }
+        .section-heading h2 { font-size: clamp(1.7rem, 4vw, 2.8rem); letter-spacing: 0; }
+        .filter-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
+        .filter-btn {
+            border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; color: var(--muted);
+            background: rgba(255,255,255,.04); font-weight: 800; cursor: pointer;
+        }
+        .filter-btn.active, .filter-btn:hover { color: var(--bg); border-color: var(--amber); background: var(--amber); }
+        .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; }
+        .project-card {
+            min-height: 480px; display: flex; flex-direction: column; overflow: hidden;
+            border: 1px solid var(--line); border-radius: 8px; background: var(--panel);
+            transition: transform .2s ease, border-color .2s ease;
+        }
+        .project-card:hover { transform: translateY(-6px); border-color: rgba(51,215,255,.55); }
+        .project-cover { position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #111820; }
+        .project-cover img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .45s ease; }
+        .project-card:hover .project-cover img { transform: scale(1.05); }
+        .project-type {
+            position: absolute; left: 12px; top: 12px; padding: 6px 10px; border-radius: 8px;
+            background: rgba(11,13,16,.76); color: var(--text); font-size: .82rem; font-weight: 800; backdrop-filter: blur(8px);
+        }
+        .project-body { display: flex; flex: 1; flex-direction: column; padding: 20px; }
+        .project-body h3 { font-size: 1.35rem; margin-bottom: 10px; }
+        .project-body p { color: var(--muted); margin-bottom: 18px; }
+        .tag-list { display: flex; gap: 8px; flex-wrap: wrap; margin: auto 0 18px; }
+        .tag {
+            border: 1px solid rgba(110,231,183,.35); border-radius: 8px; color: var(--mint);
+            padding: 5px 9px; font-size: .82rem; font-weight: 800;
+        }
+        .resources-band { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-top: 28px; }
+        .resource-item, .stat-card { border: 1px solid var(--line); border-radius: 8px; background: var(--panel-soft); padding: 18px; }
+        .resource-item h3, .stat-card strong { margin-bottom: 8px; display: block; }
+        .resource-item p, .stat-card span { color: var(--muted); }
+        .resource-list { margin-top: 14px; }
+        .modal {
+            position: fixed; inset: 0; z-index: 2000; display: none; align-items: center; justify-content: center;
+            padding: 24px; background: rgba(0,0,0,.76);
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            width: min(1050px, 96vw); max-height: 90vh; overflow: auto; border: 1px solid var(--line);
+            border-radius: 8px; background: #10151b; box-shadow: 0 28px 80px rgba(0,0,0,.48);
+        }
+        .modal-header {
+            position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: center;
+            gap: 16px; padding: 18px 20px; background: rgba(16,21,27,.94); border-bottom: 1px solid var(--line); backdrop-filter: blur(12px);
+        }
+        .modal-header h3 { font-size: clamp(1.25rem, 4vw, 2rem); }
+        .close-btn {
+            width: 42px; height: 42px; border: 1px solid var(--line); border-radius: 8px;
+            background: rgba(255,255,255,.04); color: var(--text); font-size: 1.6rem; cursor: pointer;
+        }
+        .modal-body { padding: 22px; }
+        .modal-lead { color: var(--muted); margin-bottom: 20px; max-width: 780px; }
+        .media-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 18px 0 24px; }
+        .media-grid a { display: block; overflow: hidden; border-radius: 8px; border: 1px solid var(--line); background: #0b0d10; }
+        .media-grid img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+        .feature-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 22px; }
+        .feature-list li { list-style: none; border-left: 3px solid var(--coral); background: rgba(255,255,255,.04); padding: 12px 14px; color: var(--muted); }
+        .video-frame video, .video-accordion video, .pdf-frame { width: 100%; border: 1px solid var(--line); border-radius: 8px; background: #05070a; }
+        .video-frame video { max-height: 560px; }
+        .video-accordion { display: grid; gap: 12px; margin: 18px 0 24px; }
+        .video-item { border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.035); overflow: hidden; }
+        .video-item summary {
+            display: grid; grid-template-columns: 180px minmax(0, 1fr) auto; align-items: center; gap: 16px;
+            padding: 12px; cursor: pointer; color: var(--text); font-weight: 900; list-style: none;
+        }
+        .video-item summary::-webkit-details-marker { display: none; }
+        .video-thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; background: #05070a; }
+        .video-meta { display: grid; gap: 4px; }
+        .video-meta span { color: var(--muted); font-size: .9rem; font-weight: 700; }
+        .video-chevron { color: var(--cyan); transition: transform .2s ease; }
+        .video-item[open] .video-chevron { transform: rotate(180deg); }
+        .video-panel { padding: 0 12px 14px; }
+        .pdf-frame { height: min(74vh, 760px); margin-top: 16px; }
+        #footer { border-top: 1px solid var(--line); background: rgba(5,7,10,.86); padding: 46px 0 26px; }
+        .footer-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 26px; margin-bottom: 30px; }
+        .footer-section h3 { margin-bottom: 12px; }
+        .footer-section p, .footer-section a { color: var(--muted); text-decoration: none; }
+        .footer-section ul { list-style: none; }
+        .footer-section li { margin: 8px 0; }
+        .footer-bottom { color: var(--muted); border-top: 1px solid var(--line); padding-top: 20px; text-align: center; font-size: .9rem; }
+        @media (max-width: 760px) {
+            #main-nav { top: 88px; }
+            .hero { min-height: 68vh; }
+            .section-heading { align-items: flex-start; flex-direction: column; }
+            .project-card { min-height: auto; }
+            .video-item summary { grid-template-columns: 112px minmax(0, 1fr) auto; gap: 10px; }
+            .modal { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div class="container header-container">
+            <div id="logo">
+                <img src="images/touxiang.jpg" alt="曹峻墉头像">
+                <h1>曹峻墉 · 作品集</h1>
+            </div>
+            <button id="musicToggle" type="button"><i class="fas fa-music"></i> 背景音乐</button>
+        </div>
+    </header>
+
+    <nav id="main-nav">
+        <div class="container">
+            <ul class="menu">
+                <li><a href="My.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li><a href="grjs.html"><i class="fas fa-user"></i> 关于我</a></li>
+                <li><a href="experience_profile.html"><i class="fas fa-seedling"></i> 成长经历</a></li>
+                <li class="active"><a href="works_portfolio.html"><i class="fas fa-layer-group"></i> 作品展示</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main id="main-content">
+        <section class="hero">
+            <div class="hero-carousel" aria-hidden="true">
+                <div class="hero-slide active" style="background-image: url('../动画视频渲染/首页.jpg');"></div>
+                <div class="hero-slide" style="background-image: url('../深圳地铁公共艺术方案——岩海悠座/场景展示图/0815/图片_9.png');"></div>
+                <div class="hero-slide" style="background-image: url('../福隆新街/开放设计视频1 (2)/开放设计视频1/开放设计视频1-封面.jpg');"></div>
+                <div class="hero-slide" style="background-image: url('../蒙古vr展馆项目/作品截图/HighresScreenshot00015.png');"></div>
+                <div class="hero-slide" style="background-image: url('../阿里云/问境工坊_封面截图.jpg');"></div>
+            </div>
+            <div class="hero-dots" aria-label="作品轮播切换">
+                <button class="hero-dot active" type="button" aria-label="动画视频渲染"></button>
+                <button class="hero-dot" type="button" aria-label="岩海悠座"></button>
+                <button class="hero-dot" type="button" aria-label="福隆新街"></button>
+                <button class="hero-dot" type="button" aria-label="蒙古 VR 展馆"></button>
+                <button class="hero-dot" type="button" aria-label="阿里云 UI"></button>
+            </div>
+            <div class="container hero-content">
+                <div class="eyebrow">Selected Works</div>
+                <h2>技术、空间与叙事的作品现场</h2>
+                <p>整理了公共艺术方案、城市更新开放设计、VR 展馆、交互影像、动画视频渲染与 UI 作品。每个项目都保留了可查看的图片、视频、文档或外部链接，方便快速了解完整过程与成果。</p>
+                <div class="hero-actions">
+                    <a class="primary-button" href="#projects"><i class="fas fa-arrow-down"></i> 浏览作品</a>
+                    <a class="ghost-button" href="../福隆新街/福隆新街项目图册/图册pptx_.pdf" target="_blank" rel="noopener"><i class="fas fa-file-pdf"></i> 打开图册 PDF</a>
+                </div>
+            </div>
+        </section>
+
+        <span id="tools"></span>
+        <span id="collaborations"></span>
+        <section id="projects" class="works-band">
+            <div class="container">
+                <div class="section-heading">
+                    <div>
+                        <h2>项目作品</h2>
+                        <p class="section-intro">按项目类型筛选，点击“查看详情”可以打开图像集、视频、PDF、模型文件和外部作品链接。</p>
+                    </div>
+                </div>
+
+                <div class="filter-bar" aria-label="作品筛选">
+                    <button class="filter-btn active" type="button" data-filter="all">全部</button>
+                    <button class="filter-btn" type="button" data-filter="public-art">公共艺术</button>
+                    <button class="filter-btn" type="button" data-filter="urban">城市更新</button>
+                    <button class="filter-btn" type="button" data-filter="vr">VR 展馆</button>
+                    <button class="filter-btn" type="button" data-filter="interactive">交互影像</button>
+                    <button class="filter-btn" type="button" data-filter="creative-code">创意技术</button>
+                    <button class="filter-btn" type="button" data-filter="ui">UI 设计</button>
+                    <button class="filter-btn" type="button" data-filter="render">渲染</button>
+                </div>
+
+                <div class="projects-grid">
+                    <article class="project-card" data-category="public-art">
+                        <div class="project-cover">
+                            <img src="../深圳地铁公共艺术方案——岩海悠座/场景展示图/0815/图片_9.png" alt="深圳地铁公共艺术方案场景展示">
+                            <span class="project-type">公共艺术 / 方案设计</span>
+                        </div>
+                        <div class="project-body">
+                            <h3>深圳地铁公共艺术方案：岩海悠座</h3>
+                            <p>面向地铁空间的公共艺术与休憩设施方案，包含场景展示、设计说明、版权声明与 FBX 模型文件。</p>
+                            <div class="tag-list"><span class="tag">公共空间</span><span class="tag">装置设计</span><span class="tag">场景表达</span></div>
+                            <div class="project-actions"><button class="primary-button view-btn" type="button" data-project="yanhai"><i class="fas fa-images"></i> 查看详情</button></div>
+                        </div>
+                    </article>
+
+                    <article class="project-card" data-category="urban">
+                        <div class="project-cover">
+                            <img src="../福隆新街/开放设计视频1 (2)/开放设计视频1/开放设计视频1-封面.jpg" alt="福隆新街开放设计视频封面">
+                            <span class="project-type">城市更新 / 开放设计</span>
+                        </div>
+                        <div class="project-body">
+                            <h3>福隆新街</h3>
+                            <p>围绕福隆新街场地更新展开的开放设计项目，包含完整展示视频、项目图册 PDF 与 PPTX 说明文档。</p>
+                            <div class="tag-list"><span class="tag">城市研究</span><span class="tag">开放设计</span><span class="tag">视频叙事</span></div>
+                            <div class="project-actions"><button class="primary-button view-btn" type="button" data-project="fulong"><i class="fas fa-play"></i> 查看详情</button></div>
+                        </div>
+                    </article>
+
+                    <article class="project-card" data-category="vr">
+                        <div class="project-cover">
+                            <img src="../蒙古vr展馆项目/作品截图/HighresScreenshot00015.png" alt="蒙古 VR 展馆项目截图">
+                            <span class="project-type">VR / 展馆体验</span>
+                        </div>
+                        <div class="project-body">
+                            <h3>蒙古 VR 展馆项目</h3>
+                            <p>以虚拟展馆为空间载体的沉浸式展示项目，收录高分辨率场景截图，并提供视频作品链接。</p>
+                            <div class="tag-list"><span class="tag">虚拟空间</span><span class="tag">展陈设计</span><span class="tag">Unreal 场景</span></div>
+                            <div class="project-actions"><button class="primary-button view-btn" type="button" data-project="mongolia"><i class="fas fa-vr-cardboard"></i> 查看详情</button></div>
+                        </div>
+                    </article>
+
+                    <article class="project-card" data-category="interactive">
+                        <div class="project-cover">
+                            <img src="../调和者/作品截图/屏幕截图 2026-06-24 205456.png" alt="调和者作品截图">
+                            <span class="project-type">交互影像 / 游戏化表达</span>
+                        </div>
+                        <div class="project-body">
+                            <h3>调和者</h3>
+                            <p>通过交互场景与视觉叙事构建的作品，包含界面与场景截图，并提供线上视频展示链接。</p>
+                            <div class="tag-list"><span class="tag">交互叙事</span><span class="tag">视觉设计</span><span class="tag">体验原型</span></div>
+                            <div class="project-actions"><button class="primary-button view-btn" type="button" data-project="harmony"><i class="fas fa-gamepad"></i> 查看详情</button></div>
+                        </div>
+                    </article>
+
+                    <article class="project-card" data-category="render">
+                        <div class="project-cover">
+                            <img src="../动画视频渲染/首页.jpg" alt="动画视频渲染封面">
+                            <span class="project-type">动画视频 / 渲染作品</span>
+                        </div>
+                        <div class="project-body">
+                            <h3>动画视频渲染</h3>
+                            <p>收录多个动画短片、场景漫游与实时渲染视频，展示镜头调度、场景氛围、材质表现和动态视觉表达。</p>
+                            <div class="tag-list"><span class="tag">动画短片</span><span class="tag">场景渲染</span><span class="tag">镜头表达</span></div>
+                            <div class="project-actions"><button class="primary-button view-btn" type="button" data-project="renders"><i class="fas fa-play"></i> 查看视频</button></div>
+                        </div>
+                    </article>
+
+                    <article class="project-card" data-category="creative-code">
+                        <div class="project-cover">
+                            <img src="../processing作品/%E5%AE%9E%E9%AA%8C%E4%BA%8C/sketch_260605b/02_after_nebula.png" alt="Processing 算法艺术作品截图">
+                            <span class="project-type">Processing / 算法艺术</span>
+                        </div>
+                        <div class="project-body">
+                            <h3>Processing 算法艺术作品</h3>
+                            <p>通过 Processing 与 p5.js 进行图形生成、基础互动、摄像头信号与视觉系统作品，包含可直接打开的网页草图与作品截图。</p>
+                            <div class="tag-list"><span class="tag">p5.js</span><span class="tag">生成艺术</span><span class="tag">互动作品</span></div>
+                            <div class="project-actions"><button class="primary-button view-btn" type="button" data-project="processing"><i class="fas fa-code"></i> 查看详情</button></div>
+                        </div>
+                    </article>
+
+                    <article class="project-card" data-category="ui">
+                        <div class="project-cover">
+                            <img src="../阿里云/问境工坊_封面截图.jpg" alt="阿里云通义千问 UI 设计封面">
+                            <span class="project-type">阿里云 / AI 产品 UI</span>
+                        </div>
+                        <div class="project-body">
+                            <h3>阿里云通义千问网页 UI 设计</h3>
+                            <p>面向内容创作者的 AI 智能工作台与网页原型，包含结构图、Keyframe、展示视频、PPT、PDF 和可运行网站代码。</p>
+                            <div class="tag-list"><span class="tag">AI 工作台</span><span class="tag">网页原型</span><span class="tag">API 尝试</span></div>
+                            <div class="project-actions"><button class="primary-button view-btn" type="button" data-project="aliyun"><i class="fas fa-window-restore"></i> 查看详情</button></div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="resources" class="works-band">
+            <div class="container">
+                <div class="section-heading">
+                    <div>
+                        <h2>资料索引</h2>
+                        <p class="section-intro">这里把可直接打开的文档、视频、模型和外链集中放置，方便面试或评审时快速跳转。</p>
+                    </div>
+                </div>
+                <div class="resources-band">
+                    <div class="resource-item">
+                        <h3><i class="fas fa-file-pdf"></i> 福隆新街图册</h3>
+                        <p>PDF 可在线预览，PPTX 可下载查看源文件。</p>
+                        <div class="resource-list">
+                            <a class="ghost-button" href="../福隆新街/福隆新街项目图册/图册pptx_.pdf" target="_blank" rel="noopener">PDF</a>
+                            <a class="ghost-button" href="../福隆新街/福隆新街项目图册/图册pptx_.pptx" target="_blank" rel="noopener">PPTX</a>
+                        </div>
+                    </div>
+                    <div class="resource-item">
+                        <h3><i class="fas fa-cube"></i> 岩海悠座模型与材料</h3>
+                        <p>包含 FBX 模型和版权声明文档。</p>
+                        <div class="resource-list">
+                            <a class="ghost-button" href="../深圳地铁公共艺术方案——岩海悠座/深铁.fbx" target="_blank" rel="noopener">FBX</a>
+                            <a class="ghost-button" href="../深圳地铁公共艺术方案——岩海悠座/版权申明/Doc1.docx" target="_blank" rel="noopener">版权声明</a>
+                        </div>
+                    </div>
+                    <div class="resource-item">
+                        <h3><i class="fas fa-video"></i> 线上视频</h3>
+                        <p>蒙古 VR 展馆与调和者的视频展示链接。</p>
+                        <div class="resource-list">
+                            <a class="ghost-button" href="https://b23.tv/tkQkgGS" target="_blank" rel="noopener">蒙古 VR</a>
+                            <a class="ghost-button" href="https://b23.tv/H5OyZkB" target="_blank" rel="noopener">调和者</a>
+                        </div>
+                    </div>
+                    <div class="resource-item">
+                        <h3><i class="fas fa-code"></i> 创意技术</h3>
+                        <p>Processing 网页草图与算法艺术作品。</p>
+                        <div class="resource-list">
+                            <a class="ghost-button" href="../processing作品/%E5%AE%9E%E9%AA%8C%E4%BA%8C/sketch_260605b/index.html" target="_blank" rel="noopener">Processing</a>
+                        </div>
+                    </div>
+                    <div class="resource-item">
+                        <h3><i class="fas fa-cloud"></i> 阿里云 UI</h3>
+                        <p>通义千问 UI 展示材料、PPT 与网页原型。</p>
+                        <div class="resource-list">
+                            <a class="ghost-button" href="../阿里云/千问.pdf" target="_blank" rel="noopener">PDF</a>
+                            <a class="ghost-button" href="../阿里云/千问PPT/千问.pptx" target="_blank" rel="noopener">PPT</a>
+                            <a class="ghost-button" href="http://182.92.142.44/websitecode/log_in.html" target="_blank" rel="noopener">网页</a>
+                        </div>
+                    </div>
+                    <div class="resource-item">
+                        <h3><i class="fas fa-chart-simple"></i> 当前收录</h3>
+                        <div class="stat-row">
+                            <div class="stat-card"><strong>7</strong><span>组项目</span></div>
+                            <div class="stat-card"><strong>60+</strong><span>张图像</span></div>
+                            <div class="stat-card"><strong>5</strong><span>类资料</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="projectModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle"></h3>
+                <button class="close-btn" type="button" aria-label="关闭">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <footer id="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>关于本站</h3>
+                    <p>个人作品展示网站，集中呈现空间设计、交互体验、VR 展陈与渲染作品。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <ul>
+                        <li><a href="My.html">首页</a></li>
+                        <li><a href="grjs.html">关于我</a></li>
+                        <li><a href="experience.html">成长经历</a></li>
+                        <li><a href="works_portfolio.html">作品展示</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>联系方式</h3>
+                    <p><i class="fas fa-envelope"></i> 2361423832@qq.com</p>
+                    <p><i class="fas fa-phone"></i> 18018713612</p>
+                    <p><i class="fas fa-map-marker-alt"></i> 哈尔滨工业大学建筑与设计学院</p>
+                </div>
+            </div>
+            <div class="footer-bottom">&copy; 2025 曹峻墉的个人空间 | 作品集整理展示</div>
+        </div>
+    </footer>
+
+    <script>
+        const projects = {
+            yanhai: {
+                title: "深圳地铁公共艺术方案：岩海悠座",
+                description: "以地铁站内公共休憩与艺术装置为核心，将岩石、海浪与城市通勤体验结合，形成可停留、可观看、可参与的公共空间节点。",
+                features: ["公共艺术方案与空间装置表达", "场景展示图与设计介绍图完整收录", "包含 FBX 模型与版权声明文件"],
+                actions: [
+                    { label: "设计介绍图", href: "../深圳地铁公共艺术方案——岩海悠座/设计介绍图/472ba5a09821208b940a7b947c76c09.png" },
+                    { label: "FBX 模型", href: "../深圳地铁公共艺术方案——岩海悠座/深铁.fbx" },
+                    { label: "版权声明", href: "../深圳地铁公共艺术方案——岩海悠座/版权申明/Doc1.docx" }
+                ],
+                images: [
+                    "../深圳地铁公共艺术方案——岩海悠座/场景展示图/0815/图片_9.png",
+                    "../深圳地铁公共艺术方案——岩海悠座/场景展示图/0815/图片_8(1).png",
+                    "../深圳地铁公共艺术方案——岩海悠座/场景展示图/0815/图片_7.png",
+                    "../深圳地铁公共艺术方案——岩海悠座/场景展示图/0815/图片_6.png",
+                    "../深圳地铁公共艺术方案——岩海悠座/场景展示图/0815/图片_5.png",
+                    "../深圳地铁公共艺术方案——岩海悠座/场景展示图/0815/图片_4.png",
+                    "../深圳地铁公共艺术方案——岩海悠座/场景展示图/0815/图片_3.png",
+                    "../深圳地铁公共艺术方案——岩海悠座/场景展示图/0815/图片_2.png",
+                    "../深圳地铁公共艺术方案——岩海悠座/场景展示图/0815/图片_1.png"
+                ]
+            },
+            fulong: {
+                title: "福隆新街",
+                description: "通过视频和项目图册呈现场地观察、开放设计策略与空间更新表达，适合用作完整项目汇报材料。",
+                features: ["本地 MP4 视频可直接播放", "PDF 图册可在页面内预览", "保留 PPTX 源文件便于继续编辑"],
+                actions: [
+                    { label: "打开 PDF", href: "../福隆新街/福隆新街项目图册/图册pptx_.pdf" },
+                    { label: "下载 PPTX", href: "../福隆新街/福隆新街项目图册/图册pptx_.pptx" }
+                ],
+                pdf: "../福隆新街/福隆新街项目图册/图册pptx_.pdf",
+                images: ["../福隆新街/开放设计视频1 (2)/开放设计视频1/开放设计视频1-封面.jpg"]
+            },
+            mongolia: {
+                title: "蒙古 VR 展馆项目",
+                description: "基于虚拟展陈空间的 VR 项目，通过连续场景截图展示展馆空间、氛围和路线组织，并附带线上视频链接。",
+                features: ["高分辨率展馆场景截图", "可跳转线上视频展示", "展示虚拟空间叙事与展陈组织能力"],
+                actions: [{ label: "视频链接", href: "https://b23.tv/tkQkgGS" }],
+                images: [
+                    "../蒙古vr展馆项目/作品截图/HighresScreenshot00015.png",
+                    "../蒙古vr展馆项目/作品截图/HighresScreenshot00014.png",
+                    "../蒙古vr展馆项目/作品截图/HighresScreenshot00013.png",
+                    "../蒙古vr展馆项目/作品截图/HighresScreenshot00012.png",
+                    "../蒙古vr展馆项目/作品截图/HighresScreenshot00011.png",
+                    "../蒙古vr展馆项目/作品截图/HighresScreenshot00010.png",
+                    "../蒙古vr展馆项目/作品截图/HighresScreenshot00009.png",
+                    "../蒙古vr展馆项目/作品截图/HighresScreenshot00008.png",
+                    "../蒙古vr展馆项目/作品截图/HighresScreenshot00007.png",
+                    "../蒙古vr展馆项目/作品截图/HighresScreenshot00006.png",
+                    "../蒙古vr展馆项目/作品截图/屏幕截图 2026-06-24 205102.png",
+                    "../蒙古vr展馆项目/作品截图/屏幕截图 2026-06-24 205023.png"
+                ]
+            },
+            harmony: {
+                title: "调和者",
+                description: "以界面、场景和交互反馈为主要表现的作品，强调视觉系统与体验节奏的统一。",
+                features: ["收录多张关键截图", "提供线上视频演示", "适合展示交互原型与视觉叙事"],
+                actions: [{ label: "视频链接", href: "https://b23.tv/H5OyZkB" }],
+                images: [
+                    "../调和者/作品截图/屏幕截图 2026-06-24 205456.png",
+                    "../调和者/作品截图/屏幕截图 2026-06-24 205442.png",
+                    "../调和者/作品截图/屏幕截图 2026-06-24 205418.png",
+                    "../调和者/作品截图/屏幕截图 2026-06-24 205352.png",
+                    "../调和者/作品截图/屏幕截图 2026-06-24 205321.png"
+                ]
+            },
+            processing: {
+                title: "Processing 算法艺术作品",
+                description: "围绕算法艺术课程进行的代码视觉作品，包含基础图形、交互输入、图像处理、摄像头信号与 p5.js 网页草图。作品体现了用代码建立视觉规则和交互反馈的过程。",
+                features: ["包含可直接打开的 p5.js 网页作品", "保留作品截图、源代码和网页草图", "覆盖图形生成、基础互动与摄像头信号作品"],
+                actions: [
+                    { label: "作品二网页", href: "../processing作品/%E5%AE%9E%E9%AA%8C%E4%BA%8C/sketch_260605b/index.html" },
+                    { label: "作品三网页", href: "../processing作品/%E5%AE%9E%E9%AA%8C%E4%B8%89/sketch_260522c/index.html" },
+                    { label: "作品四网页", href: "../processing作品/%E5%AE%9E%E9%AA%8C%E5%9B%9B/sketch_260529a/index.html" }
+                ],
+                images: [
+                    "../processing作品/%E5%AE%9E%E9%AA%8C%E4%BA%8C/sketch_260605b/02_after_nebula.png",
+                    "../processing作品/%E5%AE%9E%E9%AA%8C%E4%BA%8C/sketch_260605b/01_before_original.png",
+                    "../processing作品/%E5%AE%9E%E9%AA%8C%E4%BA%8C/sketch_260605b/03_new_breathing_grid.png",
+                    "../processing作品/%E5%AE%9E%E9%AA%8C%E4%B8%80/基础互动/experiment_screenshots/01_mouse_left_zone.png",
+                    "../processing作品/%E5%AE%9E%E9%AA%8C%E4%B8%80/基础互动/experiment_screenshots/02_left_click_and_theme2.png",
+                    "../processing作品/%E5%AE%9E%E9%AA%8C%E4%B8%80/基础互动/experiment_screenshots/03_right_click_and_theme4.png"
+                ]
+            },
+            aliyun: {
+                title: "阿里云通义千问网页 UI 设计",
+                description: "围绕阿里云通义千问面向内容创作者的使用场景，设计 AI 智能工作台与网页原型。项目包含功能梳理、页面切换、展示视频、UI 文档、PPT 和可运行网页代码。",
+                features: ["AI 智能创作平台界面设计", "包含 keyframe、结构图、展示视频和网页代码", "尝试页面切换程序实现、千问 API 调用与云服务器上线流程"],
+                actions: [
+                    { label: "在线网页展示", href: "http://182.92.142.44/websitecode/log_in.html" },
+                    { label: "UI 展示 PDF", href: "../阿里云/ui展示页面.pdf" },
+                    { label: "千问 PDF", href: "../阿里云/千问.pdf" },
+                    { label: "千问 PPT", href: "../阿里云/千问PPT/千问.pptx" },
+                ],
+                pdf: "../阿里云/千问.pdf",
+                images: [
+                    "../阿里云/问境工坊_封面截图.jpg",
+                    "../阿里云/keyframe/问境工坊_封面截图.png",
+                    "../阿里云/千问ui设计/ui图像/第一版结构图.png",
+                    "../阿里云/keyframe/屏幕截图 2026-06-02 223340.png",
+                    "../阿里云/keyframe/屏幕截图 2026-06-02 231641.png",
+                    "../阿里云/keyframe/屏幕截图 2026-06-05 154215.png",
+                    "../阿里云/千问ui设计/websitecode/img/scroll_1.png",
+                    "../阿里云/千问ui设计/websitecode/img/scroll_2.png"
+                ]
+            },
+            renders: {
+                title: "动画视频渲染",
+                description: "这组作品集中展示动画练习、场景打光、风格化渲染和空间镜头。每段视频可单独展开播放，便于查看不同场景的动态表现。",
+                features: ["动画与场景渲染作品合集", "包含室外、废墟、风格化与太空场景", "点击条目可展开播放视频"],
+                actions: [
+                    { label: "打开封面图", href: "../动画视频渲染/首页.jpg" }
+                ],
+                images: ["../动画视频渲染/首页.jpg"],
+                videos: [
+                    { title: "spacestation.0003_1", src: "../动画视频渲染/spacestation.0003_1.mp4", poster: "../动画视频渲染/posters/poster-01.jpg" },
+                    { title: "打光练习", src: "../动画视频渲染/打光练习.mp4", poster: "../动画视频渲染/posters/poster-02.jpg" },
+                    { title: "动画练习", src: "../动画视频渲染/动画练习.mp4", poster: "../动画视频渲染/posters/poster-03.jpg" },
+                    { title: "废墟场景", src: "../动画视频渲染/废墟场景.mp4", poster: "../动画视频渲染/posters/poster-04.jpg" },
+                    { title: "风格化场景", src: "../动画视频渲染/风格化场景.mp4", poster: "../动画视频渲染/posters/poster-05.jpg" },
+                    { title: "荒漠近景", src: "../动画视频渲染/荒漠近景.mp4", poster: "../动画视频渲染/posters/poster-06.jpg" },
+                    { title: "室外场景渲染", src: "../动画视频渲染/室外场景渲染.mp4", poster: "../动画视频渲染/posters/poster-07.jpg" },
+                    { title: "雪天室外", src: "../动画视频渲染/雪天室外.mp4", poster: "../动画视频渲染/posters/poster-08.jpg" },
+                    { title: "阴天室外场景", src: "../动画视频渲染/阴天室外场景.mp4", poster: "../动画视频渲染/posters/poster-09.jpg" }
+                ]
+            }
+        };
+
+        const modal = document.getElementById("projectModal");
+        const modalTitle = document.getElementById("modalTitle");
+        const modalBody = document.getElementById("modalBody");
+        const closeBtn = document.querySelector(".close-btn");
+
+        function renderActions(actions) {
+            if (!actions || !actions.length) return "";
+            return `<div class="modal-actions">${actions.map(action => `<a class="ghost-button" href="${action.href}" target="_blank" rel="noopener"><i class="fas fa-arrow-up-right-from-square"></i> ${action.label}</a>`).join("")}</div>`;
+        }
+
+        function renderImages(images, title) {
+            if (!images || !images.length) return "";
+            return `<div class="media-grid">${images.map((src, index) => `<a href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${title} 图像 ${index + 1}" loading="lazy"></a>`).join("")}</div>`;
+        }
+
+        function renderVideos(videos) {
+            if (!videos || !videos.length) return "";
+            return `<div class="video-accordion">${videos.map((video, index) => `
+                <details class="video-item">
+                    <summary>
+                        <img class="video-thumb" src="${video.poster}" alt="${video.title} 关键帧" loading="lazy">
+                        <span class="video-meta">
+                            <strong>${video.title}</strong>
+                            <span>点击展开视频</span>
+                        </span>
+                        <i class="fas fa-chevron-down video-chevron"></i>
+                    </summary>
+                    <div class="video-panel">
+                        <video class="accordion-video" controls preload="metadata" poster="${video.poster}" data-poster-index="${index}">
+                            <source src="${video.src}" type="video/mp4">
+                            您的浏览器不支持视频标签。
+                        </video>
+                    </div>
+                </details>
+            `).join("")}</div>`;
+        }
+
+        function hydrateVideoThumbnails(root) {
+            const items = root.querySelectorAll(".video-item");
+            items.forEach(item => {
+                item.addEventListener("toggle", () => {
+                    if (!item.open) return;
+                    items.forEach(other => {
+                        if (other !== item) other.open = false;
+                    });
+                });
+            });
+        }
+
+        function renderProject(project) {
+            return `
+                <p class="modal-lead">${project.description}</p>
+                <ul class="feature-list">${project.features.map(item => `<li>${item}</li>`).join("")}</ul>
+                ${project.video ? `<div class="video-frame"><video controls poster="${project.video.poster}"><source src="${project.video.src}" type="video/mp4">您的浏览器不支持视频标签。</video></div>` : ""}
+                ${renderVideos(project.videos)}
+                ${renderActions(project.actions)}
+                ${renderImages(project.images, project.title)}
+                ${project.pdf ? `<iframe class="pdf-frame" src="${project.pdf}" title="${project.title} PDF 图册"></iframe>` : ""}
+            `;
+        }
+
+        document.querySelectorAll(".view-btn").forEach(button => {
+            button.addEventListener("click", () => {
+                const project = projects[button.dataset.project];
+                modalTitle.textContent = project.title;
+                modalBody.innerHTML = renderProject(project);
+                hydrateVideoThumbnails(modalBody);
+                modal.classList.add("active");
+                document.body.style.overflow = "hidden";
+            });
+        });
+
+        function closeModal() {
+            modal.classList.remove("active");
+            modalBody.innerHTML = "";
+            document.body.style.overflow = "";
+        }
+
+        closeBtn.addEventListener("click", closeModal);
+        modal.addEventListener("click", event => { if (event.target === modal) closeModal(); });
+        window.addEventListener("keydown", event => { if (event.key === "Escape" && modal.classList.contains("active")) closeModal(); });
+
+        document.querySelectorAll(".filter-btn").forEach(button => {
+            button.addEventListener("click", () => {
+                const filter = button.dataset.filter;
+                document.querySelectorAll(".filter-btn").forEach(item => item.classList.remove("active"));
+                button.classList.add("active");
+                document.querySelectorAll(".project-card").forEach(card => {
+                    card.style.display = filter === "all" || card.dataset.category === filter ? "flex" : "none";
+                });
+            });
+        });
+
+        const heroSlides = document.querySelectorAll(".hero-slide");
+        const heroDots = document.querySelectorAll(".hero-dot");
+        let heroIndex = 0;
+
+        function showHeroSlide(index) {
+            heroIndex = (index + heroSlides.length) % heroSlides.length;
+            heroSlides.forEach((slide, slideIndex) => slide.classList.toggle("active", slideIndex === heroIndex));
+            heroDots.forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex === heroIndex));
+        }
+
+        heroDots.forEach((dot, index) => {
+            dot.addEventListener("click", () => showHeroSlide(index));
+        });
+
+        setInterval(() => {
+            showHeroSlide(heroIndex + 1);
+        }, 5200);
+
+        document.getElementById("musicToggle").addEventListener("click", () => {
+            alert("当前文件夹内未检测到背景音乐文件，作品视频与外链已放入作品详情中。");
+        });
+    </script>
+</body>
+</html>

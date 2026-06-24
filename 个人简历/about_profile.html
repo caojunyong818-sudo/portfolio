@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我 - 曹峻墉</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; }
+        :root {
+            --bg: #0b0d10; --panel: #151a20; --panel-soft: #1c232b; --text: #f5f7fb;
+            --muted: #aab4c0; --line: rgba(255,255,255,.12); --cyan: #33d7ff;
+            --mint: #6ee7b7; --amber: #f6c85f; --coral: #ff7a76;
+        }
+        body {
+            min-height: 100vh; color: var(--text); line-height: 1.72;
+            background: linear-gradient(135deg, rgba(51,215,255,.09), transparent 30%),
+                        linear-gradient(225deg, rgba(255,122,118,.08), transparent 34%), var(--bg);
+        }
+        .container { width: min(1120px, 92vw); margin: 0 auto; }
+        #header, #main-nav {
+            position: sticky; z-index: 1000; background: rgba(11,13,16,.86);
+            border-bottom: 1px solid var(--line); backdrop-filter: blur(14px);
+        }
+        #header { top: 0; padding: 15px 0; }
+        #main-nav { top: 89px; z-index: 900; }
+        .header-container, #logo, .menu, .hero-actions, .contact-line, .chips { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; }
+        .header-container { justify-content: space-between; }
+        #logo img { width: 58px; height: 58px; border-radius: 50%; object-fit: cover; border: 2px solid var(--cyan); }
+        #logo h1 { font-size: clamp(1.25rem, 3vw, 1.8rem); letter-spacing: 0; }
+        .menu { justify-content: center; gap: 12px; list-style: none; padding: 10px 0; }
+        .menu a {
+            display: flex; align-items: center; gap: 7px; color: var(--muted); text-decoration: none;
+            padding: 9px 13px; border-radius: 8px; font-weight: 700;
+        }
+        .menu a:hover, .menu .active a { color: var(--text); background: rgba(255,255,255,.08); }
+        .ghost-button, .primary-button {
+            display: inline-flex; align-items: center; gap: 9px; border-radius: 8px; padding: 11px 16px;
+            font-weight: 850; text-decoration: none; cursor: pointer;
+        }
+        .primary-button { background: var(--cyan); color: #061016; border: 0; }
+        .ghost-button { border: 1px solid var(--line); color: var(--text); background: rgba(255,255,255,.05); }
+        .hero { padding: 78px 0 44px; border-bottom: 1px solid var(--line); }
+        .hero-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); gap: 36px; align-items: center; }
+        .eyebrow { color: var(--mint); font-weight: 850; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 12px; font-size: .82rem; }
+        h2 { font-size: clamp(2.25rem, 6vw, 4.8rem); line-height: 1.03; letter-spacing: 0; margin-bottom: 18px; }
+        .lead { color: var(--muted); font-size: clamp(1.04rem, 2vw, 1.2rem); max-width: 780px; }
+        .portrait-card, .section, .metric, .timeline-item {
+            border: 1px solid var(--line); border-radius: 8px; background: rgba(21,26,32,.86);
+        }
+        .portrait-card { overflow: hidden; }
+        .portrait-card img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
+        .portrait-card .caption { padding: 18px; color: var(--muted); }
+        .section { margin-top: 28px; padding: 28px; }
+        .section h3 { font-size: clamp(1.45rem, 3vw, 2.1rem); margin-bottom: 16px; }
+        .section p { color: var(--muted); margin-bottom: 14px; }
+        .chips { margin-top: 18px; }
+        .chip { border: 1px solid rgba(110,231,183,.35); color: var(--mint); border-radius: 8px; padding: 7px 10px; font-weight: 800; }
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-top: 18px; }
+        .metric { padding: 18px; }
+        .metric strong { display: block; font-size: 1.8rem; color: var(--amber); }
+        .metric span { color: var(--muted); }
+        .timeline { display: grid; gap: 14px; margin-top: 18px; }
+        .timeline-item { padding: 18px; border-left: 4px solid var(--coral); }
+        .timeline-item h4 { font-size: 1.15rem; margin-bottom: 6px; }
+        .timeline-item p { margin: 0; }
+        .skill-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-top: 18px; }
+        .skill-card { background: var(--panel-soft); border: 1px solid var(--line); border-radius: 8px; padding: 18px; }
+        .skill-card h4 { color: var(--cyan); margin-bottom: 8px; }
+        .skill-card p { margin: 0; }
+        .game-list { display: grid; gap: 12px; margin-top: 18px; }
+        .game-item { border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.035); padding: 16px 18px; color: var(--muted); }
+        .game-item strong { color: var(--text); }
+        #footer { margin-top: 52px; border-top: 1px solid var(--line); background: rgba(5,7,10,.86); padding: 34px 0; color: var(--muted); text-align: center; }
+        @media (max-width: 820px) {
+            #main-nav { top: 88px; }
+            .hero-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+        <div class="container header-container">
+            <div id="logo">
+                <img src="images/touxiang.jpg" alt="曹峻墉头像">
+                <h1>曹峻墉 · 数字媒体艺术</h1>
+            </div>
+            <div class="contact-line">
+                <span><i class="fas fa-envelope"></i> 2361423832@qq.com</span>
+                <span><i class="fas fa-phone"></i> 18018713612</span>
+            </div>
+        </div>
+    </header>
+
+    <nav id="main-nav">
+        <div class="container">
+            <ul class="menu">
+                <li><a href="My.html"><i class="fas fa-home"></i> 首页</a></li>
+                <li class="active"><a href="about_profile.html"><i class="fas fa-user"></i> 关于我</a></li>
+                <li><a href="experience_profile.html"><i class="fas fa-seedling"></i> 成长经历</a></li>
+                <li><a href="works.html"><i class="fas fa-layer-group"></i> 作品展示</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="container hero-grid">
+                <div>
+                    <div class="eyebrow">Digital Media Artist / Game & Interaction Designer</div>
+                    <h2>用实时引擎、交互系统和视觉叙事构建可体验的数字世界</h2>
+                    <p class="lead">我是曹峻墉，哈尔滨工业大学数字媒体艺术本科在读。我的学习与创作集中在游戏设计、虚拟现实、数字展陈、UI 原型和创意技术方向，关注技术如何转化为空间体验、叙事机制与情感表达。</p>
+                    <div class="hero-actions">
+                        <a class="primary-button" href="works.html"><i class="fas fa-images"></i> 查看作品集</a>
+                        <a class="ghost-button" href="../哈尔滨工业大学-曹峻墉简历(1).docx" target="_blank" rel="noopener"><i class="fas fa-file-word"></i> 简历文档</a>
+                    </div>
+                </div>
+                <aside class="portrait-card">
+                    <img src="images/touxiang.jpg" alt="曹峻墉">
+                    <div class="caption">数字媒体艺术 / 游戏设计 / VR 展陈 / 交互体验 / UI 原型</div>
+                </aside>
+            </div>
+        </section>
+
+        <div class="container">
+            <section class="section">
+                <h3>创作关注</h3>
+                <p>我对游戏与数字艺术的兴趣，来自长期接触游戏、影视作品和交互媒介的过程。相比把游戏看作单纯娱乐，我更愿意把它理解为融合图像、声音、规则、空间和玩家行为的综合艺术形式。</p>
+                <p>从魂类游戏的关卡组织、开放世界的环境叙事，到合作游戏中的社会互动机制，我逐渐意识到数字空间可以承载复杂的情绪、文化和关系。我的作品也围绕这一点展开：让观众或玩家通过操作、探索与反馈进入作品，而不是只停留在观看层面。</p>
+                <div class="chips">
+                    <span class="chip">游戏机制与关卡设计</span>
+                    <span class="chip">UE5 实时引擎</span>
+                    <span class="chip">VR 数字展馆</span>
+                    <span class="chip">Processing / p5.js</span>
+                    <span class="chip">AI 产品 UI</span>
+                </div>
+            </section>
+
+            <section class="section">
+                <h3>项目经历</h3>
+                <div class="timeline">
+                    <article class="timeline-item">
+                        <h4>《调和者 Balance》</h4>
+                        <p>围绕 AI 时代人类与人工智能如何共生的主题，负责游戏概念梳理、双世界机制、后期处理材质、关卡逻辑与 UE5 蓝图实现。项目获得 2025 完美世界 Mini Game 大赛“最佳人气奖”。</p>
+                    </article>
+                    <article class="timeline-item">
+                        <h4>蒙古主题 VR 数字展馆</h4>
+                        <p>基于 UE5 与 PICO 设备完成沉浸式文化展馆体验，负责部分场景交互、视频墙展示、语音触发与用户体验流程优化。项目获得第八届大学生网络文化节省三等奖。</p>
+                    </article>
+                    <article class="timeline-item">
+                        <h4>深圳地铁公共艺术方案《岩海悠座》</h4>
+                        <p>围绕通勤人群休憩与情绪放松需求，提出“把深圳湾的海岸松弛感带入地铁空间”的概念，并完成公共艺术座椅的建模、数字雕塑与场景表达。</p>
+                    </article>
+                    <article class="timeline-item">
+                        <h4>阿里云通义千问 UI 设计</h4>
+                        <p>面向内容创作者设计 AI 智能工作台界面，负责界面功能梳理、页面切换程序实现、千问 API 调用尝试与云服务器上线流程。</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="section">
+                <h3>能力结构</h3>
+                <div class="skill-grid">
+                    <div class="skill-card">
+                        <h4>实时引擎与交互</h4>
+                        <p>UE5 蓝图、关卡逻辑、交互触发、后期材质、虚拟展陈体验设计。</p>
+                    </div>
+                    <div class="skill-card">
+                        <h4>三维资产与视觉表达</h4>
+                        <p>3ds Max、ZBrush、Substance Painter、Marvelous Designer、Marmoset Toolbag、RealityScan。</p>
+                    </div>
+                    <div class="skill-card">
+                        <h4>创意技术</h4>
+                        <p>Processing、p5.js，用代码进行生成艺术与交互原型作品创作。</p>
+                    </div>
+                    <div class="skill-card">
+                        <h4>UI 与网页原型</h4>
+                        <p>Photoshop、JavaScript 基础、AI 产品界面设计、网页原型与交互流程组织。</p>
+                    </div>
+                </div>
+                <div class="metrics">
+                    <div class="metric"><strong>2023-2027</strong><span>哈尔滨工业大学数字媒体艺术本科</span></div>
+                    <div class="metric"><strong>UE5</strong><span>游戏、VR 与实时场景主工具</span></div>
+                    <div class="metric"><strong>6+</strong><span>竞赛获奖或入选项目</span></div>
+                    <div class="metric"><strong>AI + UI</strong><span>通义千问网页原型与智能工作台设计</span></div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h3><i class="fas fa-quote-left"></i> 游戏经历</h3>
+                <div class="game-list">
+                    <div class="game-item"><strong>开放世界角色扮演类：</strong>赛博朋克 2077 62h，一周目武士刀流通关；熟悉角色成长与数值变化设计。</div>
+                    <div class="game-item"><strong>魂类游戏与 ARPG 类：</strong>艾尔登法环 424h，4 周目白金通关；了解箱庭地图关卡设计与地图资源分配。</div>
+                    <div class="game-item"><strong>FPS 类：</strong>战地 5 154h；了解枪械数值策划与战术竞技类地图设计。</div>
+                    <div class="game-item"><strong>Roguelike 类：</strong>杀戮尖塔 2 51h，小丑牌 40h 橙注；熟悉卡牌策略类游戏的规则设计与数值平衡。</div>
+                    <div class="game-item"><strong>类银河恶魔城类：</strong>空洞骑士 127h 五门通关，丝之歌 54h 普通结局与寄生结局通关；了解 2D 平台跳跃类游戏地图设计、关键技能分布设计与打击感优化。</div>
+                    <div class="game-item"><strong>角色扮演剧情演绎类：</strong>生化危机系列与美末一；熟悉镜头调度、剧情演绎与游戏内容衔接设计。</div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer id="footer">© 2025 曹峻墉的个人空间 | 数字媒体艺术作品集</footer>
+</body>
+</html>
