@@ -178,7 +178,7 @@ export function createArchiveScene(host, projects, callbacks) {
   canvas.addEventListener('pointerleave',()=>{hovered=-1;pointerX=0;wake();},{signal});
   canvas.addEventListener('wheel',event=>{
     if(event.ctrlKey)return;event.preventDefault();const now=performance.now();
-    if(now-lastWheel>320&&Math.abs(event.deltaY)+Math.abs(event.deltaX)>8){choose(row+((event.deltaY||event.deltaX)>0?1:-1),lane);lastWheel=now;}
+    if(now-lastWheel>240&&Math.abs(event.deltaY)+Math.abs(event.deltaX)>8){choose(row+((event.deltaY||event.deltaX)>0?3:-3),lane);lastWheel=now;}
   },{passive:false,signal});
   canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();stop();active=false;callbacks.onFailure();},{signal});
   const observer=new ResizeObserver(resize);observer.observe(host);
