@@ -66,6 +66,7 @@ if (root) {
     select(visible.some(p => p.id === selected) ? selected : visible[0].id, update);
   }
   function move(delta) {
+    if (scene) {scene.step(delta);return;}
     const i = visible.findIndex(p => p.id === selected);
     select(visible[(i + delta + visible.length) % visible.length].id);
   }
@@ -77,7 +78,7 @@ if (root) {
     q('[data-archive-hint]').textContent = en ? 'Choose a project from the index below' : '使用下方目录选择作品';
   }
   async function loadScene() {
-    if (!scenePromise) scenePromise = import('./archive-scene.js?v=20260919-wave-3').then(({createArchiveScene}) => {
+    if (!scenePromise) scenePromise = import('./archive-scene.js?v=20260919-optical-nav-2').then(({createArchiveScene}) => {
       scene = createArchiveScene(host, projects, {onSelect:select,onStep:move,onOpen:open,onFailure:noScene});
       scene.filter(visible.map(p => p.id));
       scene.select(selected);
@@ -104,7 +105,7 @@ if (root) {
   q('[data-archive-next]').addEventListener('click', () => move(1));
   host.addEventListener('keydown', e => {
     if (e.altKey || e.metaKey || e.ctrlKey) return;
-    const actions = {ArrowLeft:()=>move(-1),ArrowRight:()=>move(1),Home:()=>select(visible[0].id),End:()=>select(visible.at(-1).id),Enter:open};
+    const actions = {ArrowUp:()=>scene?.shiftLane(-1),ArrowDown:()=>scene?.shiftLane(1),ArrowLeft:()=>move(-1),ArrowRight:()=>move(1),Home:()=>select(visible[0].id),End:()=>select(visible.at(-1).id),Enter:open};
     if (actions[e.key]) { e.preventDefault(); actions[e.key](); }
   });
   reduce.addEventListener('change', () => panelAnimation?.cancel());
