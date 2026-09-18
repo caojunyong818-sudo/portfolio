@@ -333,6 +333,41 @@
     ],
     "images": [
       {
+        "src": "assets/media/mongolia-portfolio-01.webp",
+        "caption": "作品集封面 · 毡帐、摇篮与绿洲",
+        "width": 3300,
+        "height": 1500,
+        "wide": true
+      },
+      {
+        "src": "assets/media/mongolia-portfolio-02.webp",
+        "caption": "作品集 02 · 文化调研与用户分析",
+        "width": 3300,
+        "height": 1500,
+        "wide": true
+      },
+      {
+        "src": "assets/media/mongolia-portfolio-03.webp",
+        "caption": "作品集 03 · 关卡组织与参观路线",
+        "width": 3300,
+        "height": 1500,
+        "wide": true
+      },
+      {
+        "src": "assets/media/mongolia-portfolio-04.webp",
+        "caption": "作品集 04 · 资产制作与场景色彩",
+        "width": 3300,
+        "height": 1500,
+        "wide": true
+      },
+      {
+        "src": "assets/media/mongolia-portfolio-05.webp",
+        "caption": "作品集 05 · VR 交互与程序实现",
+        "width": 3300,
+        "height": 1500,
+        "wide": true
+      },
+      {
         "src": "assets/media/mongolia-01.webp",
         "caption": "当代展厅 · 入口与展陈界面",
         "width": 1920,
@@ -416,10 +451,11 @@
       "空间叙事"
     ],
     "cover": {
-      "src": "assets/media/mongolia-01.webp",
-      "caption": "当代展厅 · 入口与展陈界面",
-      "width": 1920,
-      "height": 1044
+      "src": "assets/media/mongolia-portfolio-01.webp",
+      "caption": "作品集封面 · 毡帐、摇篮与绿洲",
+      "width": 3300,
+      "height": 1500,
+      "wide": true
     },
     "summary": "用蒙古包、列车与展厅串联文化叙事，通过抓取、视频和位置触发组织 VR 参观体验。",
     "focus": "模型美术 / 关卡策划 / 部分交互实现",
@@ -507,7 +543,8 @@
         ],
         "cards": []
       }
-    ]
+    ],
+    "cover_fit": "contain"
   },
   {
     "title": "福隆新街",
