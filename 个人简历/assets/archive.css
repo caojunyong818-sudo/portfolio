@@ -67,3 +67,32 @@ body.archive-immersive{overflow:hidden;background:#e8ebe0}
 @media(max-height:650px) and (max-width:760px){.archive-immersive .archive-panel{bottom:82px;max-height:133px}.archive-immersive .dossier-type,.archive-immersive .dossier-stamp{display:none}.archive-immersive .archive-navigation{bottom:227px}.archive-immersive .archive-index{bottom:10px}}
 html[lang=en] .archive-immersive .page-heading h1{font-size:27px;max-width:250px}
 @media(max-width:760px){html[lang=en] .archive-immersive .page-heading h1{font-size:20px;max-width:235px}}
+
+/* Floating type over the folio field; no framed specimen or shelf UI. */
+.archive-immersive .archive-scene{background:#eeeee6}
+.archive-immersive .archive-panel{top:38%;right:6%;bottom:auto;width:350px;padding:0 0 0 20px;background:transparent;border:0;border-left:3px solid var(--signal);backdrop-filter:none;box-shadow:none;max-height:calc(62dvh - 120px);overflow:auto}
+.archive-immersive .archive-panel:before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#f1f2e9d9,#f1f2e994 80%,transparent);pointer-events:none}
+.archive-immersive .archive-dossier{min-height:0}
+.archive-immersive .dossier-image,.archive-immersive .archive-dossier dl{display:none}
+.archive-immersive .dossier-stamp{font-size:11px;margin-bottom:19px;padding:0}
+.archive-immersive .dossier-stamp>span:first-child{font:bold 31px/1.1 'Arial',sans-serif;letter-spacing:-.04em}
+.archive-immersive .dossier-stamp>span:first-child:before{display:none}
+.archive-immersive .dossier-stamp>span:last-child{padding-right:24px;color:#707765}
+.archive-immersive .dossier-type{font-size:10px;margin:0 0 9px}
+.archive-immersive .archive-dossier h2{font-size:27px;line-height:1.2;margin:0 0 17px;max-width:320px}
+.archive-immersive .dossier-summary{font-size:11px;max-width:310px;margin:0 0 24px;color:#525b46;text-shadow:0 1px 5px #f4f4ed}
+.archive-immersive .dossier-open{background:transparent;color:#20251b;margin:0;width:230px;padding:11px 0;border-bottom:2px solid var(--signal);font-size:12px;font-weight:600}
+.archive-immersive .dossier-open:hover{padding-inline:12px;background:var(--signal);color:#20251b}
+.archive-immersive .archive-toolbar .filter-button{background:#f3f4ef85;backdrop-filter:blur(5px)}
+.archive-immersive .archive-toolbar .filter-button[aria-pressed=true]{background:var(--signal)}
+.archive-immersive .archive-index-button{background:#f3f4efa1;backdrop-filter:blur(5px)}
+.archive-immersive .archive-scene-floor{display:none}
+@media(min-width:761px){.archive-immersive .archive-navigation>div{margin-right:0}.archive-immersive .archive-navigation{right:6%;left:32px}.archive-immersive .archive-navigation [data-archive-position]{font-size:24px;letter-spacing:-.06em}.archive-immersive .archive-navigation>div{border:0;background:#f3f4efb0;padding:5px 12px}.archive-immersive .archive-navigation button{border:0;font-size:22px;width:40px}}
+@media(max-width:1050px) and (min-width:761px){.archive-immersive .archive-panel{right:4%;width:290px;top:38%}.archive-immersive .archive-dossier h2{font-size:23px}}
+@media(max-width:760px){
+ .archive-immersive .archive-panel{inset:auto 16px 103px;width:auto;padding:10px 14px;max-height:185px;border:0;border-left:3px solid var(--signal);background:#f3f4efc9;backdrop-filter:blur(8px)}
+ .archive-immersive .archive-panel:before{display:none}.archive-immersive .dossier-stamp{margin-bottom:7px}.archive-immersive .dossier-stamp>span:first-child{font-size:18px}.archive-immersive .dossier-stamp>span:last-child{font-size:9px;padding:0}
+ .archive-immersive .archive-dossier h2{font-size:21px;margin-bottom:9px;max-width:none}.archive-immersive .dossier-type,.archive-immersive .dossier-summary{display:none}
+ .archive-immersive .dossier-open{width:100%;font-size:10px;padding:7px 0}.archive-immersive .archive-navigation{bottom:289px}
+}
+@media(max-height:650px) and (max-width:760px){.archive-immersive .archive-panel{bottom:84px;max-height:130px}.archive-immersive .archive-navigation{bottom:235px}}

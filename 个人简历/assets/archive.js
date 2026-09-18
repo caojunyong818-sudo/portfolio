@@ -77,7 +77,7 @@ if (root) {
     q('[data-archive-hint]').textContent = en ? 'Choose a project from the index below' : '使用下方目录选择作品';
   }
   async function loadScene() {
-    if (!scenePromise) scenePromise = import('./archive-scene.js?v=20260919-fullscreen-2').then(({createArchiveScene}) => {
+    if (!scenePromise) scenePromise = import('./archive-scene.js?v=20260919-wave-3').then(({createArchiveScene}) => {
       scene = createArchiveScene(host, projects, {onSelect:select,onStep:move,onOpen:open,onFailure:noScene});
       scene.filter(visible.map(p => p.id));
       scene.select(selected);
