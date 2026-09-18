@@ -1,0 +1,27 @@
+/* Motion only: the established identity, spacing and content stay unchanged. */
+:root{--ease-out:cubic-bezier(.2,.75,.2,1);--ease-in:cubic-bezier(.65,0,.8,.25)}
+.site-header{z-index:90}
+.works-list .project-grid{align-content:start}
+html.motion-ready::before,html.motion-ready::after{content:'';position:fixed;inset:0;pointer-events:none;z-index:80;transform:scaleX(0);transform-origin:right;background:#f3f4ef}
+html.motion-ready::after{background:#d0f500;z-index:79}
+html.motion-leave::before{transform-origin:left;animation:page-cover 180ms var(--ease-in) both}
+html.motion-leave::after{transform-origin:left;animation:page-cover 150ms var(--ease-in) both}
+html.motion-arrive::before{animation:page-uncover 420ms var(--ease-out) both}
+html.motion-arrive::after{animation:page-uncover 470ms var(--ease-out) both}
+@keyframes page-cover{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes page-uncover{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+html.motion-leave main{opacity:.5;translate:0 -5px;transition:opacity 180ms ease,translate 180ms ease}
+.nav-links a,.text-link,.filter-button,.resource-links a,.primary-button,.ghost-button{transition:color 180ms ease,background-color 180ms ease,border-color 180ms ease}
+.nav-links a[aria-current]::after{transform-origin:left;animation:nav-line-in 360ms var(--ease-out) both}
+@keyframes nav-line-in{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.card-arrow,.feature-open,.arrow-circle{transition:background-color 180ms ease,translate 240ms var(--ease-out)}
+.card-image:hover .card-arrow,.feature:hover .feature-open,.case-next:hover .arrow-circle{translate:2px -2px}
+.card-image img{transition:transform 580ms var(--ease-out),filter 350ms ease}
+.filter-button{position:relative}.filter-button::after{content:'';position:absolute;inset:auto 0 -4px;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform 240ms var(--ease-out)}
+.filter-button[aria-pressed=true]::after{transform:scaleX(1)}
+.lightbox[open]{animation:lightbox-in 240ms var(--ease-out) both}
+.lightbox[open]::backdrop{animation:backdrop-in 200ms ease both}
+@keyframes lightbox-in{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes backdrop-in{from{opacity:0}to{opacity:1}}
+@media(max-width:760px){html.motion-arrive::before{animation-duration:340ms}html.motion-arrive::after{animation-duration:390ms}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}html::before,html::after{display:none!important}html.motion-leave main{opacity:1;translate:none}*,*::before,*::after{animation:none!important;transition:none!important}}
