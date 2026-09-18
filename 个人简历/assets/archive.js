@@ -47,6 +47,11 @@ if (root) {
     q('[data-archive-announcement]').textContent = `${project.number} / ${project.title}`;
     q('[data-archive-prev]').disabled = q('[data-archive-next]').disabled = visible.length < 2;
     root.dataset.selectedProject = id;
+    if (view === 'archive') {
+      const index = q('.archive-index'), button = project.button;
+      if (button.offsetLeft < index.scrollLeft || button.offsetLeft + button.offsetWidth > index.scrollLeft + index.clientWidth)
+        index.scrollTo({left:button.offsetLeft - (index.clientWidth - button.offsetWidth)/2,behavior:reduce.matches?'instant':'smooth'});
+    }
     scene?.select(id);
     if (update) saveUrl();
   }
@@ -72,7 +77,7 @@ if (root) {
     q('[data-archive-hint]').textContent = en ? 'Choose a project from the index below' : '使用下方目录选择作品';
   }
   async function loadScene() {
-    if (!scenePromise) scenePromise = import('./archive-scene.js?v=20260919b').then(({createArchiveScene}) => {
+    if (!scenePromise) scenePromise = import('./archive-scene.js?v=20260919-fullscreen-2').then(({createArchiveScene}) => {
       scene = createArchiveScene(host, projects, {onSelect:select,onStep:move,onOpen:open,onFailure:noScene});
       scene.filter(visible.map(p => p.id));
       scene.select(selected);
@@ -87,6 +92,7 @@ if (root) {
     q('.archive-grid').hidden = view !== 'grid';
     qa('[data-archive-view]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.archiveView === view)));
     root.dataset.archiveView = view;
+    document.body.classList.toggle('archive-immersive', view === 'archive');
     scene?.setVisible(view === 'archive');
     if (view === 'archive') loadScene();
     if (update) saveUrl();

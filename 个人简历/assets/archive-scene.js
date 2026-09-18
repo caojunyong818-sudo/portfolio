@@ -14,22 +14,22 @@ export function createArchiveScene(host, projects, callbacks) {
   host.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(-6,6,4,-4,.1,80);
-  const aim = new THREE.Vector3(0,1.65,.35);
-  camera.position.set(7,6.2,12);
+  const aim = new THREE.Vector3(0,2.4,0);
+  camera.position.set(6,7.8,15);
   camera.lookAt(aim);
   scene.add(new THREE.HemisphereLight(0xffffff,0x849077,3));
   const sun = new THREE.DirectionalLight(0xfff9e7,4.2);
   sun.position.set(-4,9,5);sun.castShadow=true;
   sun.shadow.mapSize.set(1024,1024);
-  Object.assign(sun.shadow.camera,{left:-7,right:7,top:7,bottom:-7,near:1,far:30});
+  Object.assign(sun.shadow.camera,{left:-18,right:18,top:14,bottom:-14,near:1,far:45});
   sun.shadow.normalBias=.035;sun.shadow.bias=-.0001;
   scene.add(sun);
   const fill = new THREE.DirectionalLight(0xedffe0,1.2);fill.position.set(5,4,-3);scene.add(fill);
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(100,100),new THREE.ShadowMaterial({opacity:.16}));
   floor.rotation.x=-Math.PI/2;floor.position.y=-.08;floor.receiveShadow=true;scene.add(floor);
-  const rail = new THREE.Mesh(new THREE.BoxGeometry(8.6,.12,1.25),new THREE.MeshStandardMaterial({color:0xc6cabe,roughness:.72}));
+  const rail = new THREE.Mesh(new THREE.BoxGeometry(42,.12,1.25),new THREE.MeshStandardMaterial({color:0xc6cabe,roughness:.72}));
   rail.position.set(0,0,-1.4);rail.receiveShadow=true;scene.add(rail);
-  const railLine = new THREE.Mesh(new THREE.BoxGeometry(8.3,.018,.025),new THREE.MeshBasicMaterial({color:0x666f59}));
+  const railLine = new THREE.Mesh(new THREE.BoxGeometry(42,.018,.025),new THREE.MeshBasicMaterial({color:0x666f59}));
   railLine.position.set(0,.07,-.81);scene.add(railLine);
 
   const bodyMaterial = new THREE.MeshPhysicalMaterial({color:0xf1f1df,roughness:.32,metalness:.08,clearcoat:.35});
@@ -44,6 +44,7 @@ export function createArchiveScene(host, projects, callbacks) {
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   let selected = projects[0].id, available=projects.map(p=>p.id), raf=0, previousTime=0;
   let active=true, inViewport=true, disposed=false, hovered=null, pointerX=0;
+  let narrow=host.clientWidth<760;
   const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
   const events = new AbortController(), signal = events.signal;
   const objects = projects.map((project,index) => {
@@ -102,19 +103,60 @@ export function createArchiveScene(host, projects, callbacks) {
     return {id:project.id,group,body,tab,strip,target};
   });
 
+  // Repeated real files and clearly marked empty slots extend beyond the viewport.
+  // Copies share geometry and textures with the original files.
+  const emptyCanvas=document.createElement('canvas');emptyCanvas.width=630;emptyCanvas.height=756;
+  const ec=emptyCanvas.getContext('2d');
+  ec.fillStyle='#e9ecdf';ec.fillRect(0,0,630,756);
+  ec.strokeStyle='#b1b8a1';ec.lineWidth=2;
+  for(let y=100;y<710;y+=50){ec.beginPath();ec.moveTo(35,y);ec.lineTo(595,y);ec.stroke();}
+  ec.fillStyle='#68715b';ec.font='22px monospace';ec.fillText('CJ / OPEN ARCHIVE',35,60);
+  ec.fillStyle='#303a27';ec.font='bold 68px "Segoe UI","Microsoft YaHei",sans-serif';ec.fillText(en?'UNEXPLORED':'待探索',35,350);
+  ec.font='22px monospace';ec.fillText('THE NEXT POSSIBILITY',35,401);
+  ec.fillStyle='#d0f500';ec.fillRect(35,626,560,64);
+  ec.fillStyle='#303a27';ec.font='23px monospace';ec.fillText('FUTURE / --',52,668);
+  const emptyTexture=new THREE.CanvasTexture(emptyCanvas);emptyTexture.colorSpace=THREE.SRGBColorSpace;textures.push(emptyTexture);
+  const emptyMaterial=new THREE.MeshBasicMaterial({map:emptyTexture,toneMapped:false});ownMaterials.push(emptyMaterial);
+  const extensions=[];
+  for(const row of [-1,0,1]) {
+    for(let slot=-15;slot<=15;slot++) {
+      const source=objects[((slot+30+row*3)%objects.length+objects.length)%objects.length];
+      const group=source.group.clone(true),empty=(slot+row)%3===0;
+      group.userData.projectId=empty?null:source.id;
+      group.children[4].material=trimMaterial;
+      if(empty)group.children.at(-1).material=emptyMaterial;
+      scene.add(group);
+      extensions.push({group,body:group.children[0],id:empty?null:source.id,sourceId:empty?null:source.id,faceMaterial:source.group.children.at(-1).material,slot,row});
+    }
+    if(row!==0){const shelf=rail.clone();shelf.position.y=row*4.55;scene.add(shelf);}
+  }
   function targets(snap=false) {
+    const selectedIndex=Math.max(0,available.indexOf(selected));
     objects.forEach(object => {
       const index=available.indexOf(object.id),chosen=object.id===selected;
       object.group.visible=index>=0;
       if(index<0)return;
-      object.target={x:chosen ? -.35 : (index-(available.length-1)/2)*.66,
-        y:chosen ? 2.17 : 1.62+(object.id === hovered ? .12 : 0),z:chosen ? 1.5 : -1.45,
-        rotation:chosen ? .12 : -.42,scale:chosen ? 1.06 : .82};
+      let offset=index-selectedIndex;
+      if(offset>available.length/2)offset-=available.length;
+      if(offset<-available.length/2)offset+=available.length;
+      object.target={x:chosen ? (narrow?-.25:.25) : offset*1.55,
+        y:chosen ? 2.2 : 1.62+(object.id === hovered ? .15 : 0),z:chosen ? 2.5 : -1.45,
+        rotation:chosen ? .04 : -.5,scale:chosen ? 1.16 : .86};
       object.tab.material=chosen ? acidMaterial : trimMaterial;
       if(snap||reduce.matches) {
         object.group.position.set(object.target.x,object.target.y,object.target.z);
         object.group.rotation.y=object.target.rotation;object.group.scale.setScalar(object.target.scale);
       }
+    });
+    const occupied=objects.filter(o=>o.group.visible).map(o=>Math.round(o.target.x/1.55));
+    extensions.forEach(object=>{
+      const {group,sourceId,faceMaterial,slot,row}=object;
+      object.id=available.includes(sourceId)?sourceId:null;
+      group.userData.projectId=object.id;
+      group.children.at(-1).material=object.id?faceMaterial:emptyMaterial;
+      group.visible=row!==0||!occupied.includes(slot);
+      group.position.set(slot*1.55,1.62+row*4.55,-1.45);
+      group.rotation.y=-.5;group.scale.setScalar(.86);
     });
     wake();
   }
@@ -134,7 +176,7 @@ export function createArchiveScene(host, projects, callbacks) {
       group.scale.setScalar(group.scale.x+(target.scale-group.scale.x)*amount);
       moving ||= Math.abs(target.rotation-group.rotation.y)>.001 || Math.abs(target.scale-group.scale.x)>.001;
     });
-    const wanted=reduce.matches?7:7+pointerX*.45;
+    const wanted=reduce.matches?6:6+pointerX*.32;
     camera.position.x+=(wanted-camera.position.x)*amount;camera.lookAt(aim);
     moving ||= Math.abs(wanted-camera.position.x)>.001;
     renderer.render(scene,camera);
@@ -146,14 +188,16 @@ export function createArchiveScene(host, projects, callbacks) {
   function resize() {
     const {width,height}=host.getBoundingClientRect();if(!width||!height)return;
     renderer.setSize(width,height,false);
-    const aspect=width/height,span=Math.max(6.7,8.5/aspect);
+    narrow=width<760;
+    const aspect=width/height,span=narrow?15:11.5;
+    aim.set(narrow?-.3:0,narrow?1.4:2.4,0);
     camera.left=-span*aspect/2;camera.right=span*aspect/2;camera.top=span/2;camera.bottom=-span/2;camera.updateProjectionMatrix();wake();
   }
   function pick(event) {
     const rect=host.getBoundingClientRect();
     mouse.set((event.clientX-rect.left)/rect.width*2-1,-(event.clientY-rect.top)/rect.height*2+1);
     ray.setFromCamera(mouse,camera);
-    const hit=ray.intersectObjects(objects.filter(o=>o.group.visible).map(o=>o.body),false)[0];
+    const hit=ray.intersectObjects([...objects,...extensions].filter(o=>o.group.visible&&o.id).map(o=>o.body),false)[0];
     return hit?.object.parent.userData.projectId;
   }
   let drag=null,lastWheel=0;
@@ -183,9 +227,9 @@ export function createArchiveScene(host, projects, callbacks) {
   },{signal});
   for(const type of ['pointercancel','lostpointercapture'])canvas.addEventListener(type,()=>{drag=null;},{signal});
   canvas.addEventListener('pointerleave',()=>{hovered=null;pointerX=0;targets();},{signal});
-  // Wheel navigation is opt-in through focus, so ordinary page scrolling stays natural.
+  // Archive occupies the viewport; wheel input advances the selected file.
   canvas.addEventListener('wheel',event=>{
-    if(document.activeElement!==host||event.ctrlKey||available.length<2)return;
+    if(event.ctrlKey||available.length<2)return;
     event.preventDefault();const time=performance.now();
     if(time-lastWheel>260&&Math.abs(event.deltaY)+Math.abs(event.deltaX)>8){callbacks.onStep((event.deltaY||event.deltaX)>0?1:-1);lastWheel=time;}
   },{passive:false,signal});
