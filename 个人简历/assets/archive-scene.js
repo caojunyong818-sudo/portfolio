@@ -1,6 +1,8 @@
 import * as THREE from './vendor/three-0.186.0/three.module.js';
 import {createArchiveOptics} from './archive-optics.js?v=20260919-lens-2';
 
+export const ARCHIVE_ROW_STRIDE=3;
+export const ARCHIVE_ROW_DISTANCE=.52*ARCHIVE_ROW_STRIDE;
 export const archiveProjectIndex=(row,lane,length)=>((row+lane*2)%length+length)%length;
 export function nearestArchiveRow(index,lane,current,length){const base=index-lane*2;return base+Math.round((current-base)/length)*length;}
 
@@ -86,11 +88,14 @@ export function createArchiveScene(host, projects, callbacks) {
     cells.forEach((cell,i)=>{
       // Recycle only beyond the visible field, so continuous scrolling never
       // reaches an edge or teleports the neighboring folios.
-      cell.logicalRow=cell.col+Math.round((panRow-cell.col)/49)*49;
+      cell.logicalRow=cell.col+Math.round((panRow*ARCHIVE_ROW_STRIDE-cell.col)/49)*49;
       cell.logicalLane=cell.lane+Math.round((panLane-cell.lane)/7)*7;
       cell.x=cell.logicalRow*.52;cell.z=cell.logicalLane*5.95;
-      cell.id=available[archiveProjectIndex(cell.logicalRow,cell.logicalLane,available.length)];
-      cell.chosen=cell.logicalRow===row&&cell.logicalLane===lane;
+      // Two neutral folios between projects preserve the dense field while
+      // logical selection advances only one numbered project at a time.
+      cell.entryRow=cell.logicalRow/ARCHIVE_ROW_STRIDE;
+      cell.id=cell.logicalRow%ARCHIVE_ROW_STRIDE===0?available[archiveProjectIndex(cell.entryRow,cell.logicalLane,available.length)]:null;
+      cell.chosen=cell.logicalRow===row*ARCHIVE_ROW_STRIDE&&cell.logicalLane===lane;
       if(cell.chosen)selectedCell=cell;
       labelMeshes[i].material=labels.get(cell.id)||emptyLabel;
       caps.setColorAt(i,cell.chosen?acid:neutral);
@@ -113,7 +118,7 @@ export function createArchiveScene(host, projects, callbacks) {
     moving ||= Math.abs(row-panRow)>.001||Math.abs(lane-panLane)>.001;
     assign();
     cells.forEach((cell,i)=>{
-      const dx=cell.x-row*.52,dz=cell.z-lane*5.95;
+      const dx=cell.x-row*ARCHIVE_ROW_DISTANCE,dz=cell.z-lane*5.95;
       const crest=2.15*Math.exp(-dx*dx/1.55-dz*dz/20)+(cell.chosen ? .55 : 0);
       const distance=Math.hypot((cell.x-wave.x)*.9,(cell.z-wave.z)*.65);
       const t=age-distance*.075;
@@ -123,18 +128,18 @@ export function createArchiveScene(host, projects, callbacks) {
       cell.lift+=(target-cell.lift)*amount;
       if(Math.abs(target-cell.lift)>.002)moving=true;
       cell.y=1.325+cell.lift;
-      dummy.position.set(cell.x-panRow*.52,cell.y,cell.z-panLane*5.95);dummy.rotation.set(0,0,0);dummy.scale.set(1,1,1);dummy.updateMatrix();bodies.setMatrixAt(i,dummy.matrix);
+      dummy.position.set(cell.x-panRow*ARCHIVE_ROW_DISTANCE,cell.y,cell.z-panLane*5.95);dummy.rotation.set(0,0,0);dummy.scale.set(1,1,1);dummy.updateMatrix();bodies.setMatrixAt(i,dummy.matrix);
       dummy.position.y=cell.y+1.34;dummy.updateMatrix();caps.setMatrixAt(i,dummy.matrix);
-      labelMeshes[i].position.set(cell.x-panRow*.52+.094,cell.y+(cell.chosen ? .55 : .05),cell.z-panLane*5.95);
+      labelMeshes[i].position.set(cell.x-panRow*ARCHIVE_ROW_DISTANCE+.094,cell.y+(cell.chosen ? .55 : .05),cell.z-panLane*5.95);
     });
     bodies.instanceMatrix.needsUpdate=true;caps.instanceMatrix.needsUpdate=true;
     const wanted=12+(reduce.matches?0:pointerX*.22);camera.position.x+=(wanted-camera.position.x)*amount;camera.lookAt(aim);
     moving ||= Math.abs(wanted-camera.position.x)>.002;
     const waveAlive=!reduce.matches&&age<4.4;
     host.dataset.waveState=waveAlive?'traveling':(moving?'settling':'still');
-    focusPoint.set((row-panRow)*.52,3.6,(lane-panLane)*5.95);
+    focusPoint.set((row-panRow)*ARCHIVE_ROW_DISTANCE,3.6,(lane-panLane)*5.95);
     optics.render(focusPoint);host.dataset.ready='true';
-    host.dataset.archivePan=`${(-panRow*.52).toFixed(3)},${(-panLane*5.95).toFixed(3)}`;
+    host.dataset.archivePan=`${(-panRow*ARCHIVE_ROW_DISTANCE).toFixed(3)},${(-panLane*5.95).toFixed(3)}`;
     host.dataset.archiveRow=String(row);host.dataset.archiveLane=String(lane);
     if(waveAlive||moving)wake();
   }
@@ -171,14 +176,14 @@ export function createArchiveScene(host, projects, callbacks) {
   },{signal});
   canvas.addEventListener('pointerup',event=>{
     if(drag?.id!==event.pointerId)return;
-    if(!drag.moved){const hit=pick(event);if(hit!==undefined){const cell=cells[hit];ripple(cell.x,cell.z);if(cell.id)choose(cell.logicalRow,cell.logicalLane);}}
+    if(!drag.moved){const hit=pick(event);if(hit!==undefined){const cell=cells[hit];ripple(cell.x,cell.z);if(cell.id)choose(cell.entryRow,cell.logicalLane);}}
     drag=null;if(canvas.hasPointerCapture(event.pointerId))canvas.releasePointerCapture(event.pointerId);
   },{signal});
   for(const type of ['pointercancel','lostpointercapture'])canvas.addEventListener(type,()=>{drag=null;},{signal});
   canvas.addEventListener('pointerleave',()=>{hovered=-1;pointerX=0;wake();},{signal});
   canvas.addEventListener('wheel',event=>{
     if(event.ctrlKey)return;event.preventDefault();const now=performance.now();
-    if(now-lastWheel>240&&Math.abs(event.deltaY)+Math.abs(event.deltaX)>8){choose(row+((event.deltaY||event.deltaX)>0?3:-3),lane);lastWheel=now;}
+    if(now-lastWheel>240&&Math.abs(event.deltaY)+Math.abs(event.deltaX)>8){choose(row+((event.deltaY||event.deltaX)>0?1:-1),lane);lastWheel=now;}
   },{passive:false,signal});
   canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();stop();active=false;callbacks.onFailure();},{signal});
   const observer=new ResizeObserver(resize);observer.observe(host);
@@ -200,7 +205,7 @@ export function createArchiveScene(host, projects, callbacks) {
       const next=pendingAnchor||{row:nearestArchiveRow(Math.max(0,available.indexOf(id)),lane,row,available.length),lane};
       pendingAnchor=null;const moved=row!==next.row||lane!==next.lane;
       host.dataset.archiveMotionAxis=lane!==next.lane?'column':'row';row=next.row;lane=next.lane;
-      assign();if(changed||moved||pendingIntro){pendingIntro=false;ripple(row*.52,lane*5.95);}else wake();
+      assign();if(changed||moved||pendingIntro){pendingIntro=false;ripple(row*ARCHIVE_ROW_DISTANCE,lane*5.95);}else wake();
     },
     step(delta){choose(row+delta,lane);},
     shiftLane(delta){choose(row,lane+delta);},
