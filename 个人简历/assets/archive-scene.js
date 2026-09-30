@@ -1,5 +1,5 @@
 import * as THREE from './vendor/three-0.186.0/three.module.js';
-import {createArchiveOptics} from './archive-optics.js?v=20260930-perf-1';
+import {createArchiveOptics} from './archive-optics.js?v=20260930-visual-restore-1';
 
 export const ARCHIVE_ROW_STRIDE=3;
 export const ARCHIVE_ROW_DISTANCE=.52*ARCHIVE_ROW_STRIDE;
@@ -9,8 +9,8 @@ export function nearestArchiveRow(index,lane,current,length){const base=index-la
 /* An original field of thin, freestanding folios. Shared instances keep the dense
    geometry inexpensive; distance-delayed springs produce the traveling wave. */
 export function createArchiveScene(host, projects, callbacks) {
-  let efficient=host.clientWidth<760 || (navigator.hardwareConcurrency||8)<=4;
-  const renderer=new THREE.WebGLRenderer({alpha:true,antialias:false,powerPreference:'high-performance'});
+  const renderer=new THREE.WebGLRenderer({alpha:true,antialias:true,powerPreference:'low-power'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1,host.clientWidth<760?1:1.35));
   renderer.setClearColor(0xeeeDE7,0);
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;
   renderer.outputColorSpace=THREE.SRGBColorSpace;
@@ -21,11 +21,11 @@ export function createArchiveScene(host, projects, callbacks) {
   const aim=new THREE.Vector3(0,2.6,0);camera.position.set(12,13,17);camera.lookAt(aim);
   scene.add(new THREE.HemisphereLight(0xfffcf5,0xb8a594,1.35));
   const sun=new THREE.DirectionalLight(0xffeee0,3.6);sun.position.set(-5,18,9);sun.castShadow=true;
-  sun.shadow.mapSize.set(1024,1024);
+  sun.shadow.mapSize.set(2048,2048);
   Object.assign(sun.shadow.camera,{left:-22,right:22,top:25,bottom:-25,near:1,far:65});
   sun.shadow.normalBias=.025;sun.shadow.bias=-.0001;scene.add(sun);
   const rimLight=new THREE.DirectionalLight(0xffceb9,1.2);rimLight.position.set(8,7,-8);scene.add(rimLight);
-  const optics=createArchiveOptics(renderer,scene,camera,efficient);
+  const optics=createArchiveOptics(renderer,scene,camera);
   const focusPoint=new THREE.Vector3();
   const floorMaterial=new THREE.MeshStandardMaterial({color:0xe8e2d8,roughness:1});
   const floor=new THREE.Mesh(new THREE.PlaneGeometry(180,180),floorMaterial);
@@ -35,9 +35,9 @@ export function createArchiveScene(host, projects, callbacks) {
   const bodyGeometry=new THREE.ExtrudeGeometry(outline,{depth:5.25,bevelEnabled:true,bevelThickness:.025,bevelSize:.025,bevelSegments:2,steps:1});
   bodyGeometry.translate(0,0,-2.625);
   const capGeometry=new THREE.BoxGeometry(.185,.035,5.28);
-  const bodyMaterial=new THREE.MeshPhysicalMaterial({color:0xf4eee3,roughness:.24,metalness:0,clearcoat:.32,clearcoatRoughness:.19});
+  const bodyMaterial=new THREE.MeshPhysicalMaterial({color:0xf4eee3,roughness:.24,metalness:0,clearcoat:.32,clearcoatRoughness:.19,transmission:.2,thickness:.34,ior:1.38,attenuationColor:0xffc9b5,attenuationDistance:1.3});
   // A small wrapped backlight term approximates warm subsurface diffusion;
-  // retain the warm edge lighting without a second transmission scene render.
+  // physical transmission provides the thin-volume absorption/refraction.
   bodyMaterial.onBeforeCompile=shader=>{
     shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>',`
       float scatter=pow(clamp(dot(-normal,normalize(vec3(-.3,.5,.7))),0.,1.),2.);
@@ -57,12 +57,11 @@ export function createArchiveScene(host, projects, callbacks) {
   const dummy=new THREE.Object3D(),neutral=new THREE.Color(0xffffff),acid=new THREE.Color(0xd0f500);
   const en=document.documentElement.lang==='en',reduce=matchMedia('(prefers-reduced-motion: reduce)');
   const events=new AbortController(),{signal}=events;
+  const textures=[],labelMaterials=[];
   // Small printed labels sit on the broad side, instead of framed cover posters.
   const labelGeometry=new THREE.PlaneGeometry(3.5,1.65);
-  const atlasColumns=4,atlasRows=Math.ceil((projects.length+1)/atlasColumns);
-  const atlas=document.createElement('canvas');atlas.width=atlasColumns*512;atlas.height=atlasRows*256;
-  const atlasContext=atlas.getContext('2d');
-  const labelFor=(project,slot)=>{
+  const labelMeshes=[];
+  const labelFor=project=>{
     const canvas=document.createElement('canvas');canvas.width=700;canvas.height=330;
     const ctx=canvas.getContext('2d');ctx.clearRect(0,0,700,330);
     ctx.fillStyle='#50564a';ctx.font='18px monospace';ctx.fillText('CJ / SELECTED WORKS',25,40);
@@ -72,31 +71,20 @@ export function createArchiveScene(host, projects, callbacks) {
     for(const char of title){if(ctx.measureText(line+char).width>650){ctx.fillText(line,25,y);line='';y+=37;}line+=char;}ctx.fillText(line,25,y);
     ctx.fillStyle='#aabc25';ctx.fillRect(25,280,86,5);
     ctx.fillStyle='#79806b';ctx.font='16px monospace';ctx.fillText(project?'DESIGN / EXPERIENCE / PLAY':'THE NEXT POSSIBILITY',130,287);
-    atlasContext.drawImage(canvas,(slot%atlasColumns)*512,(atlasRows-1-Math.floor(slot/atlasColumns))*256,512,256);
-    return slot;
+    const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;textures.push(texture);
+    const material=new THREE.MeshBasicMaterial({map:texture,transparent:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,toneMapped:false});
+    labelMaterials.push(material);return material;
   };
-  const labels=new Map(projects.map((p,i)=>[p.id,labelFor(p,i)])),emptyLabel=labelFor(null,projects.length);
-  const labelTexture=new THREE.CanvasTexture(atlas);labelTexture.colorSpace=THREE.SRGBColorSpace;
-  const labelMaterial=new THREE.MeshBasicMaterial({map:labelTexture,alphaTest:.15,polygonOffset:true,polygonOffsetFactor:-1,toneMapped:false});
-  labelMaterial.onBeforeCompile=shader=>{
-    shader.vertexShader='attribute float labelSlot;\n'+shader.vertexShader;
-    shader.vertexShader=shader.vertexShader.replace('#include <uv_vertex>',`#include <uv_vertex>
-      vMapUv=(vMapUv+vec2(mod(labelSlot,${atlasColumns}.),floor(labelSlot/${atlasColumns}.)))/vec2(${atlasColumns}.,${atlasRows}.);`);
-  };
-  labelMaterial.customProgramCacheKey=()=>`folio-atlas-${atlasRows}`;
-  const labelSlots=new THREE.InstancedBufferAttribute(new Float32Array(cells.length),1);labelSlots.setUsage(THREE.DynamicDrawUsage);
-  labelGeometry.setAttribute('labelSlot',labelSlots);
-  const labelMesh=new THREE.InstancedMesh(labelGeometry,labelMaterial,cells.length);
-  labelMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);labelMesh.frustumCulled=false;scene.add(labelMesh);
+  const labels=new Map(projects.map(p=>[p.id,labelFor(p)])),emptyLabel=labelFor(null);
+  for(const cell of cells){
+    const mesh=new THREE.Mesh(labelGeometry,emptyLabel);mesh.rotation.y=Math.PI/2;scene.add(mesh);labelMeshes.push(mesh);
+  }
   let selected=projects[0].id,available=projects.map(p=>p.id),selectedCell=null;
   let active=true,inViewport=true,disposed=false,raf=0,previousTime=0,clock=0,pointerX=0,hovered=-1;
   let wave={x:0,z:0,start:0},pendingIntro=true,narrow=false;
   let row=0,lane=0,panRow=0,panLane=0,pendingAnchor=null;
-  let assignmentKey='',frameSamples=0,frameTotal=0,lastHoverPick=0;
   const ray=new THREE.Raycaster(),mouse=new THREE.Vector2();
   function assign(){
-    const key=`${Math.round(panRow*ARCHIVE_ROW_STRIDE)}:${Math.round(panLane)}:${row}:${lane}:${available.join(',')}`;
-    if(key===assignmentKey)return;assignmentKey=key;
     cells.forEach((cell,i)=>{
       // Recycle only beyond the visible field, so continuous scrolling never
       // reaches an edge or teleports the neighboring folios.
@@ -109,10 +97,10 @@ export function createArchiveScene(host, projects, callbacks) {
       cell.id=cell.logicalRow%ARCHIVE_ROW_STRIDE===0?available[archiveProjectIndex(cell.entryRow,cell.logicalLane,available.length)]:null;
       cell.chosen=cell.logicalRow===row*ARCHIVE_ROW_STRIDE&&cell.logicalLane===lane;
       if(cell.chosen)selectedCell=cell;
-      labelSlots.setX(i,labels.get(cell.id)??emptyLabel);
+      labelMeshes[i].material=labels.get(cell.id)||emptyLabel;
       caps.setColorAt(i,cell.chosen?acid:neutral);
     });
-    caps.instanceColor.needsUpdate=true;labelSlots.needsUpdate=true;
+    caps.instanceColor.needsUpdate=true;
   }
   function choose(nextRow,nextLane){
     pendingAnchor={row:nextRow,lane:nextLane};
@@ -121,15 +109,7 @@ export function createArchiveScene(host, projects, callbacks) {
   function ripple(x,z){wave={x,z,start:clock};wake();}
   function update(time){
     raf=0;if(disposed||!active||!inViewport||document.hidden)return;
-    const elapsed=previousTime?time-previousTime:0;
-    if(!efficient&&elapsed>0&&elapsed<500){
-      frameTotal+=elapsed;frameSamples++;
-      if(frameSamples===60){
-        if(frameTotal/frameSamples>24){efficient=true;optics.setEfficient();resize();}
-        frameSamples=0;frameTotal=0;
-      }
-    }
-    const dt=Math.min(elapsed/1000||.016,.04);previousTime=time;clock+=dt;
+    const dt=Math.min((time-previousTime)/1000||.016,.04);previousTime=time;clock+=dt;
     const amount=reduce.matches?1:1-Math.exp(-dt*8.5);
     let moving=false;
     const age=clock-wave.start;
@@ -150,9 +130,9 @@ export function createArchiveScene(host, projects, callbacks) {
       cell.y=1.325+cell.lift;
       dummy.position.set(cell.x-panRow*ARCHIVE_ROW_DISTANCE,cell.y,cell.z-panLane*5.95);dummy.rotation.set(0,0,0);dummy.scale.set(1,1,1);dummy.updateMatrix();bodies.setMatrixAt(i,dummy.matrix);
       dummy.position.y=cell.y+1.34;dummy.updateMatrix();caps.setMatrixAt(i,dummy.matrix);
-      dummy.position.set(cell.x-panRow*ARCHIVE_ROW_DISTANCE+.094,cell.y+(cell.chosen ? .55 : .05),cell.z-panLane*5.95);dummy.rotation.y=Math.PI/2;dummy.updateMatrix();labelMesh.setMatrixAt(i,dummy.matrix);
+      labelMeshes[i].position.set(cell.x-panRow*ARCHIVE_ROW_DISTANCE+.094,cell.y+(cell.chosen ? .55 : .05),cell.z-panLane*5.95);
     });
-    bodies.instanceMatrix.needsUpdate=true;caps.instanceMatrix.needsUpdate=true;labelMesh.instanceMatrix.needsUpdate=true;
+    bodies.instanceMatrix.needsUpdate=true;caps.instanceMatrix.needsUpdate=true;
     const wanted=12+(reduce.matches?0:pointerX*.22);camera.position.x+=(wanted-camera.position.x)*amount;camera.lookAt(aim);
     moving ||= Math.abs(wanted-camera.position.x)>.002;
     const waveAlive=!reduce.matches&&age<4.4;
@@ -161,16 +141,13 @@ export function createArchiveScene(host, projects, callbacks) {
     optics.render(focusPoint);host.dataset.ready='true';
     host.dataset.archivePan=`${(-panRow*ARCHIVE_ROW_DISTANCE).toFixed(3)},${(-panLane*5.95).toFixed(3)}`;
     host.dataset.archiveRow=String(row);host.dataset.archiveLane=String(lane);
-    if(waveAlive||moving)wake();else previousTime=0;
+    if(waveAlive||moving)wake();
   }
   function wake(){if(!raf&&!disposed&&active&&inViewport&&!document.hidden)raf=requestAnimationFrame(update);}
   function stop(){cancelAnimationFrame(raf);raf=0;previousTime=0;}
   function resize(){
     const {width,height}=host.getBoundingClientRect();if(!width||!height)return;
-    narrow=width<760;
-    renderer.setPixelRatio(Math.min(devicePixelRatio||1,efficient?1:1.25,Math.sqrt((efficient?900000:1600000)/(width*height))));
-    renderer.setSize(width,height,false);optics.resize(width,height);
-    host.dataset.quality=efficient?'efficient':'balanced';
+    narrow=width<760;renderer.setSize(width,height,false);optics.resize(width,height);
     const span=narrow?17:13,aspect=width/height;
     aim.set(narrow ? -.6 : 0,narrow ? 2.9 : 2.6,0);
     camera.left=-span*aspect/2;camera.right=span*aspect/2;camera.top=span/2;camera.bottom=-span/2;camera.updateProjectionMatrix();wake();
@@ -194,7 +171,6 @@ export function createArchiveScene(host, projects, callbacks) {
       return;
     }
     pointerX=event.clientX/host.clientWidth*2-1;
-    const now=performance.now();if(now-lastHoverPick<50)return;lastHoverPick=now;
     const hit=pick(event)??-1;
     if(hit!==hovered){hovered=hit;if(hit>=0)ripple(cells[hit].x,cells[hit].z);else wake();}
   },{signal});
@@ -219,8 +195,8 @@ export function createArchiveScene(host, projects, callbacks) {
   function dispose(){
     if(disposed)return;disposed=true;stop();events.abort();observer.disconnect();intersection.disconnect();
     for(const geometry of [bodyGeometry,capGeometry,labelGeometry,floor.geometry])geometry.dispose();
-    for(const material of [bodyMaterial,capMaterial,floorMaterial,labelMaterial])material.dispose();
-    labelTexture.dispose();labelMesh.dispose();bodies.dispose();caps.dispose();optics.dispose();renderer.dispose();
+    for(const material of [bodyMaterial,capMaterial,floorMaterial,...labelMaterials])material.dispose();
+    textures.forEach(t=>t.dispose());bodies.dispose();caps.dispose();optics.dispose();renderer.dispose();
   }
   assign();resize();
   return {

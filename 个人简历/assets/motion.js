@@ -15,7 +15,7 @@
     const hint = document.createElement('link'); hint.rel = 'prefetch'; hint.href = url.href; document.head.appendChild(hint);
     if (assetBase && url.pathname.endsWith('/works_portfolio.html') && !warmed.has('archive-modules')) {
       warmed.add('archive-modules');
-      for (const name of ['archive-scene.js?v=20260930-perf-1', 'archive-optics.js?v=20260930-perf-1', 'vendor/three-0.186.0/three.module.js', 'vendor/three-0.186.0/three.core.js']) {
+      for (const name of ['archive-scene.js?v=20260930-visual-restore-1', 'archive-optics.js?v=20260930-visual-restore-1', 'vendor/three-0.186.0/three.module.js', 'vendor/three-0.186.0/three.core.js']) {
         const module = document.createElement('link'); module.rel = 'modulepreload'; module.href = new URL(name, assetBase).href; document.head.appendChild(module);
       }
     }
