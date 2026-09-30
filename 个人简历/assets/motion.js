@@ -4,6 +4,23 @@
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const key = 'portfolio-page-handoff';
   const active = new Set();
+  const assetBase = document.currentScript ? new URL('.', document.currentScript.src) : null;
+  const warmed = new Set();
+  function warmLink(link) {
+    if (!link || navigator.connection?.saveData || /(^|-)2g$/.test(navigator.connection?.effectiveType || '')) return;
+    const url = new URL(link.href, location.href);
+    if (url.origin !== location.origin || !url.pathname.endsWith('.html') || url.pathname === location.pathname || warmed.has(url.href)) return;
+    if (!decodeURIComponent(url.pathname).includes('/个人简历/')) return;
+    warmed.add(url.href);
+    const hint = document.createElement('link'); hint.rel = 'prefetch'; hint.href = url.href; document.head.appendChild(hint);
+    if (assetBase && url.pathname.endsWith('/works_portfolio.html') && !warmed.has('archive-modules')) {
+      warmed.add('archive-modules');
+      for (const name of ['archive-scene.js?v=20260930-perf-1', 'archive-optics.js?v=20260930-perf-1', 'vendor/three-0.186.0/three.module.js', 'vendor/three-0.186.0/three.core.js']) {
+        const module = document.createElement('link'); module.rel = 'modulepreload'; module.href = new URL(name, assetBase).href; document.head.appendChild(module);
+      }
+    }
+  }
+  for (const type of ['pointerover', 'focusin', 'touchstart']) document.addEventListener(type, event => warmLink(event.target.closest?.('a[href]')), {passive:true});
   let pending = '', leaveTimer = 0, recoveryTimer = 0, arrivalTimer = 0;
   let arrival = false;
   try {
@@ -59,12 +76,13 @@
     pending = destination.href;
     root.classList.remove('motion-arrive');
     root.classList.add('motion-leave');
-    leaveTimer = setTimeout(navigate, 180);
+    warmLink(link);
+    leaveTimer = setTimeout(navigate, 90);
   });
 
   document.addEventListener('DOMContentLoaded', () => {
     const first = [...document.querySelectorAll('.hero-copy > *, .particle-stage, .page-heading > *, .case-heading > *, .case-cover, .profile .hero-grid > *')];
-    const initialDelay = arrival ? 90 : 0;
+    const initialDelay = 0;
     first.forEach((element, index) => {
       // A chapter deep-link must not replay the hero above the current position.
       const box = element.getBoundingClientRect();
@@ -74,7 +92,7 @@
         {opacity:0, transform:'translateX(26px)', clipPath:'inset(0 0 0 8%)'},
         {opacity:1, transform:'translateX(0)', clipPath:'inset(0 0 0 0)'}
       ] : [{opacity:0, transform:'translateY(16px)'}, {opacity:1, transform:'translateY(0)'}], {
-        duration:media ? 620 : 480, delay:initialDelay + Math.min(index,4) * 45
+        duration:media ? 420 : 340, delay:initialDelay + Math.min(index,4) * 30
       });
     });
     if (!('IntersectionObserver' in window)) return;

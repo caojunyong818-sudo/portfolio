@@ -91,7 +91,23 @@
       if (event.key === 'ArrowRight') { event.preventDefault(); show(index + 1); }
     });
   }
-  document.querySelectorAll('.video-list details').forEach(details => details.addEventListener('toggle', () => {
-    if (!details.open) details.querySelector('video')?.pause();
-  }));
+  const videos = [...document.querySelectorAll('.video-list video')];
+  document.querySelectorAll('.video-list details').forEach(details => {
+    const video = details.querySelector('video');
+    if (!video) return;
+    const prime = () => {
+      if (navigator.connection?.saveData || video.preload !== 'none') return;
+      video.preload = 'metadata'; video.load();
+    };
+    details.querySelector('summary')?.addEventListener('pointerenter', prime, {once:true});
+    details.querySelector('summary')?.addEventListener('focus', prime, {once:true});
+    details.addEventListener('toggle', () => {
+      if (!details.open) { video.pause(); return; }
+      videos.forEach(other => { if (other !== video) { other.pause(); other.preload = 'none'; } });
+      if (navigator.connection?.saveData) return;
+      video.preload = 'auto';
+      if (video.readyState === 0 && video.networkState !== 2) video.load();
+    });
+    video.addEventListener('play', () => videos.forEach(other => { if (other !== video) other.pause(); }));
+  });
 })();

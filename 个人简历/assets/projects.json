@@ -1024,48 +1024,57 @@
     "videos": [
       {
         "title": "太空站场景",
-        "src": "../动画视频渲染/spacestation.0003_1.mp4",
-        "poster": "../动画视频渲染/posters/poster-01.jpg"
+        "src": "assets/media/renders-demo-01.mp4",
+        "poster": "../动画视频渲染/posters/poster-01.jpg",
+        "original_src": "../动画视频渲染/spacestation.0003_1.mp4"
       },
       {
         "title": "打光练习",
-        "src": "../动画视频渲染/打光练习.mp4",
-        "poster": "../动画视频渲染/posters/poster-02.jpg"
+        "src": "assets/media/renders-demo-02.mp4",
+        "poster": "../动画视频渲染/posters/poster-02.jpg",
+        "original_src": "../动画视频渲染/打光练习.mp4"
       },
       {
         "title": "动画练习",
-        "src": "../动画视频渲染/动画练习.mp4",
-        "poster": "../动画视频渲染/posters/poster-03.jpg"
+        "src": "assets/media/renders-demo-03.mp4",
+        "poster": "../动画视频渲染/posters/poster-03.jpg",
+        "original_src": "../动画视频渲染/动画练习.mp4"
       },
       {
         "title": "废墟场景",
-        "src": "../动画视频渲染/废墟场景.mp4",
-        "poster": "../动画视频渲染/posters/poster-04.jpg"
+        "src": "assets/media/renders-demo-04.mp4",
+        "poster": "../动画视频渲染/posters/poster-04.jpg",
+        "original_src": "../动画视频渲染/废墟场景.mp4"
       },
       {
         "title": "风格化场景",
-        "src": "../动画视频渲染/风格化场景.mp4",
-        "poster": "../动画视频渲染/posters/poster-05.jpg"
+        "src": "assets/media/renders-demo-05.mp4",
+        "poster": "../动画视频渲染/posters/poster-05.jpg",
+        "original_src": "../动画视频渲染/风格化场景.mp4"
       },
       {
         "title": "荒漠近景",
-        "src": "../动画视频渲染/荒漠近景.mp4",
-        "poster": "../动画视频渲染/posters/poster-06.jpg"
+        "src": "assets/media/renders-demo-06.mp4",
+        "poster": "../动画视频渲染/posters/poster-06.jpg",
+        "original_src": "../动画视频渲染/荒漠近景.mp4"
       },
       {
         "title": "室外场景渲染",
-        "src": "../动画视频渲染/室外场景渲染.mp4",
-        "poster": "../动画视频渲染/posters/poster-07.jpg"
+        "src": "assets/media/renders-demo-07.mp4",
+        "poster": "../动画视频渲染/posters/poster-07.jpg",
+        "original_src": "../动画视频渲染/室外场景渲染.mp4"
       },
       {
         "title": "雪天室外",
-        "src": "../动画视频渲染/雪天室外.mp4",
-        "poster": "../动画视频渲染/posters/poster-08.jpg"
+        "src": "assets/media/renders-demo-08.mp4",
+        "poster": "../动画视频渲染/posters/poster-08.jpg",
+        "original_src": "../动画视频渲染/雪天室外.mp4"
       },
       {
         "title": "阴天室外场景",
-        "src": "../动画视频渲染/阴天室外场景.mp4",
-        "poster": "../动画视频渲染/posters/poster-09.jpg"
+        "src": "assets/media/renders-demo-09.mp4",
+        "poster": "../动画视频渲染/posters/poster-09.jpg",
+        "original_src": "../动画视频渲染/阴天室外场景.mp4"
       }
     ],
     "id": "renders",
